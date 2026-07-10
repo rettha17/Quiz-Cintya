@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(\"/c/laragon/bin/php/php-8.1.10-Win32-vs16-x64/php.exe\" -l \"c:\\\\laragon\\\\www\\\\quiz_bps\\\\quiz.php\")",
+      "Bash(\"/c/laragon/bin/php/php-8.1.10-Win32-vs16-x64/php.exe\" -S 127.0.0.1:8099)",
+      "Bash(\"/c/Program Files/Google/Chrome/Application/chrome.exe\" --headless --disable-gpu --no-sandbox --window-size=1300,900 --virtual-time-budget=3000 --screenshot=\"C:\\\\Users\\\\sihom\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--laragon-www-quiz-bps\\\\a1470fae-7976-496e-ab76-364d63f50952\\\\scratchpad\\\\badge_fix.png\" \"http://127.0.0.1:8099/_test_login.php?to=quiz.php%3Fkategori=1%26level=Mudah\")",
+      "Bash(powershell -NoProfile -Command 'Get-CimInstance Win32_Process -Filter \"Name='\\\\''php.exe'\\\\''\" | Where-Object { $_.CommandLine -like '\\\\''*8099*'\\\\'' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }')",
+      "Bash(\"/c/laragon/bin/php/php-8.1.10-Win32-vs16-x64/php.exe\" -l \"c:\\\\laragon\\\\www\\\\quiz_bps\\\\cek_jawaban.php\")",
+      "Bash(/c/laragon/bin/php/php-8.1.10-Win32-vs16-x64/php.exe -r ' *)",
+      "Bash(grep -n '^-$\\\\|>-<\\\\|\">-\\\\|^\\\\s*-\\\\s*$' \"/c/laragon/www/quiz_bps/cek_jawaban.php\")",
+      "Bash(xxd)"
+    ]
+  }
+}
