@@ -24,6 +24,9 @@ if ($kategori > 0) {
 
 if ($kategori > 0 && isset($_SESSION['skor'])) {
 
+    $xpLama = (int) $user['xp'];
+    $levelLama = (int) $user['level'];
+
     $stmt = mysqli_prepare($conn, "
         INSERT INTO hasil_quiz (user_id, kategori_id, level, score, xp)
         VALUES (?, ?, ?, ?, ?)
@@ -46,6 +49,22 @@ if ($kategori > 0 && isset($_SESSION['skor'])) {
 
     $user['xp'] = $userBaru['xp'];
     $user['level'] = $levelBaru;
+
+    $namaKategoriLog = $kategoriInfo['nama'] ?? 'kategori';
+    logAktivitas(
+        $conn,
+        'quiz_selesai',
+        e($user['nama']) . ' menyelesaikan Quiz ' . e($namaKategoriLog) . ' (' . e($level) . ') dengan skor ' . (int) $skor . '.',
+        'fa-gamepad',
+        'blue',
+        $user_id
+    );
+
+    if ($levelBaru > $levelLama) {
+        logAktivitas($conn, 'level_up', e($user['nama']) . ' naik ke Level ' . (int) $levelBaru . '.', 'fa-arrow-up', 'orange', $user_id);
+    }
+
+    cekBadgeBaru($conn, $xpLama, (int) $userBaru['xp'], $user_id, $user['nama']);
 }
 
 /* ===========================

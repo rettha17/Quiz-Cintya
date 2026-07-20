@@ -33,7 +33,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
 .main{
 
-margin-left:84px;
+margin-left:270px;
 
 padding:30px;
 
@@ -250,8 +250,6 @@ margin-bottom:15px;
 </div>
 </div>
 
-<a href="index.php" class="back-link"><i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard</a>
-
 <div class="title">
 
 <div>
@@ -350,9 +348,9 @@ Pilih Level
 
 <div class="node">
 
-<i class="fa-solid fa-fire"></i>
+<i class="fa-solid fa-bullseye"></i>
 
-Padamkan Api (Quiz)
+Jawab Soal (Quiz)
 
 </div>
 
@@ -404,13 +402,13 @@ FINISH
 
 <p>
 
-3. Soal muncul satu per satu bertema petugas pemadam kebakaran — setiap opsi jawaban adalah jendela gedung yang terbakar.
+3. Soal muncul satu per satu dengan tema visual yang berbeda-beda sesuai kombinasi kategori &amp; level — pemadam kebakaran (default), kebun bunga, bajak laut, lebah, panda, katak, penguin, astronot, hingga ksatria. Setiap opsi jawaban adalah target yang "ditembak" oleh karakter tema tersebut.
 
 </p>
 
 <p>
 
-4. Jawaban benar → api mengecil jadi asap, skor bertambah. Jawaban salah → api membesar, -1 nyawa.
+4. Jawaban benar → target berhasil dikenai dan efeknya menyesuaikan tema (api mengecil, bunga mekar, serangga tertangkap, dll), skor bertambah. Jawaban salah → efek sebaliknya (api membesar, serangga kabur, dll), -1 nyawa.
 
 </p>
 

@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . "/../inc/auth.php";
+require_once __DIR__ . "/../inc/functions.php";
 
 header('Content-Type: application/json');
 
@@ -12,7 +13,7 @@ if ($materiId <= 0 || !in_array($action, ['buka', 'selesai'], true)) {
     exit;
 }
 
-$stmt = mysqli_prepare($conn, "SELECT xp FROM materi WHERE id=?");
+$stmt = mysqli_prepare($conn, "SELECT xp, judul FROM materi WHERE id=?");
 mysqli_stmt_bind_param($stmt, "i", $materiId);
 mysqli_stmt_execute($stmt);
 $materi = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
@@ -57,9 +58,22 @@ if ($action === 'buka') {
     }
 
     if ($xpAwarded > 0) {
+        $xpLama = (int) $user['xp'];
+
         $stmt = mysqli_prepare($conn, "UPDATE users SET xp = xp + ? WHERE id=?");
         mysqli_stmt_bind_param($stmt, "ii", $xpAwarded, $user_id);
         mysqli_stmt_execute($stmt);
+
+        logAktivitas(
+            $conn,
+            'materi_selesai',
+            e($user['nama']) . ' menyelesaikan materi "' . e($materi['judul']) . '".',
+            'fa-book-open',
+            'teal',
+            $user_id
+        );
+
+        cekBadgeBaru($conn, $xpLama, $xpLama + $xpAwarded, $user_id, $user['nama']);
     }
 }
 

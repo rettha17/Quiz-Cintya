@@ -143,7 +143,19 @@
       "Bash(curl -s \"http://localhost:8099/pengguna/quiz.php?kategori=1&level=Sedang&no=0\" --cookie \"PHPSESSID=testsess123\")",
       "Bash(curl -s \"http://localhost:8099/pengguna/quiz.php?kategori=1&level=Mudah&no=0\" --cookie \"PHPSESSID=testsess123\")",
       "Bash(curl -s -o /tmp/cek_benar_panda.html \"http://localhost:8099/pengguna/cek_jawaban.php\" --cookie \"PHPSESSID=testsess123\" -d \"id_soal=17&kategori=2&level=Sedang&nomor=0&jawaban=B\")",
-      "Bash(curl -s -o /tmp/cek_salah_panda.html \"http://localhost:8099/pengguna/cek_jawaban.php\" --cookie \"PHPSESSID=testsess123\" -d \"id_soal=17&kategori=2&level=Sedang&nomor=0&jawaban=A\")"
+      "Bash(curl -s -o /tmp/cek_salah_panda.html \"http://localhost:8099/pengguna/cek_jawaban.php\" --cookie \"PHPSESSID=testsess123\" -d \"id_soal=17&kategori=2&level=Sedang&nomor=0&jawaban=A\")",
+      "Bash(powershell -Command \"Get-ChildItem 'c:\\\\laragon\\\\www\\\\quiz_bps\\\\pengguna\\\\assets\\\\img' -Filter '*logo*'\")",
+      "Read(//c/Users/sihom/.claude/projects/c--laragon-www-quiz-bps/memory/**)",
+      "Bash(/c/laragon/bin/php/php-8.1.10-Win32-vs16-x64/php.exe -l \"c:\\\\laragon\\\\www\\\\quiz_bps\\\\pengguna\\\\login.php\")",
+      "Skill(run)",
+      "Skill(run:*)",
+      "Bash(chromium-cli --session loginpage)",
+      "Bash(node -e \"console.log\\('node ok'\\)\")",
+      "Bash(npm ls *)",
+      "Bash(timeout 60 npx --yes playwright --version)",
+      "Bash(timeout 180 npx --yes playwright install chromium)",
+      "Bash(curl -s -o /dev/null -w \"server_check=%{http_code}\\\\n\" http://localhost:8099/pengguna/login.php)",
+      "Bash(node shot.js)"
     ],
     "additionalDirectories": [
       "\\tmp"

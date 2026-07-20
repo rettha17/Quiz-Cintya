@@ -12,25 +12,29 @@ $activeMenu = $activeMenu ?? '';
 
 <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
-<aside class="sidebar" id="sidebar">
-
-<button type="button" class="rail-toggle" id="railToggle" aria-label="Perluas menu">
-<i class="fa-solid fa-chevron-right"></i>
-</button>
+<aside class="sidebar expanded" id="sidebar">
 
 <div class="logo">
 
 <div class="logo-icon">
 
-<i class="fa-solid fa-chart-column"></i>
+<svg viewBox="0 0 40 40" class="logo-icon-svg" aria-hidden="true">
+<polyline points="5,22 13,16 20,19 32,7" fill="none" stroke="#FFA726" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="25,7 32,7 32,14" fill="none" stroke="#FFA726" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="5" y="23" width="5" height="8" rx="1.5" fill="#fff"/>
+<rect x="13" y="19" width="5" height="12" rx="1.5" fill="#fff"/>
+<rect x="21" y="15" width="5" height="16" rx="1.5" fill="#fff"/>
+<rect x="29" y="8" width="5" height="23" rx="1.5" fill="#fff"/>
+<rect x="5" y="33" width="29" height="2.5" rx="1.25" fill="#fff"/>
+</svg>
 
 </div>
 
 <div>
 
-<h2>Quiz BPS</h2>
+<h2><span class="logo-qcs">QCS</span><span class="logo-b">B</span></h2>
 
-<p>Media Edukasi Statistik</p>
+<p>Quiz Challenge Statistik BPS</p>
 
 </div>
 
@@ -126,6 +130,11 @@ $activeMenu = $activeMenu ?? '';
 <span>Logout</span>
 </a>
 
+<div class="sidebar-mascot-block">
+<img src="assets/img/sidebar-mascot-trophy.png" alt="Maskot Quiz Challenge BPS: Belajar Statistik Jadi Lebih Menyenangkan!" class="sidebar-mascot-full-img">
+<p class="sidebar-mascot-caption">Terus belajar dan raih semua pencapaianmu!</p>
+</div>
+
 </div>
 
 </aside>
@@ -135,7 +144,6 @@ $activeMenu = $activeMenu ?? '';
     var sidebar = document.getElementById("sidebar");
     var toggle = document.getElementById("sidebarToggle");
     var backdrop = document.getElementById("sidebarBackdrop");
-    var railToggle = document.getElementById("railToggle");
     var themeToggle = document.getElementById("themeToggle");
     var SIDEBAR_WIDTH = 270;
     var EDGE_ZONE = 24;
@@ -190,19 +198,6 @@ $activeMenu = $activeMenu ?? '';
 
     Array.prototype.forEach.call(sidebar.querySelectorAll("a"), function(link){
         link.addEventListener("click", closeSidebar);
-    });
-
-    /* ---- desktop rail expand/collapse ---- */
-    railToggle.addEventListener("click", function(e){
-        e.stopPropagation();
-        sidebar.classList.toggle("expanded");
-    });
-
-    document.addEventListener("click", function(e){
-        if (isMobile()) return;
-        if (!sidebar.classList.contains("expanded")) return;
-        if (sidebar.contains(e.target)) return;
-        sidebar.classList.remove("expanded");
     });
 
     /* ---- swipe / drag gesture (mobile) ---- */

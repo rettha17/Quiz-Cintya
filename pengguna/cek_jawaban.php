@@ -33,13 +33,21 @@ $temaKebun = ($temaQuiz === 'kebun');
 $temaBajakLaut = ($temaQuiz === 'bajak-laut');
 $temaLebah = ($temaQuiz === 'lebah');
 $temaPanda = ($temaQuiz === 'panda');
+$temaKatak = ($temaQuiz === 'katak');
+$temaPenguin = ($temaQuiz === 'penguin');
+$temaAstronot = ($temaQuiz === 'astronot');
+$temaKsatria = ($temaQuiz === 'ksatria');
 $bungaEmoji = ['A' => '🌺', 'B' => '🪻', 'C' => '🌻', 'D' => '🌼'];
 $bungaEmojiLebah = ['A' => '🌸', 'B' => '🪷', 'C' => '🌻', 'D' => '🌼'];
-$temaSceneClass = $temaKebun ? ' tema-kebun' : ($temaBajakLaut ? ' tema-bajak-laut' : ($temaLebah ? ' tema-lebah' : ($temaPanda ? ' tema-panda' : '')));
-$temaSmoke1 = $temaBajakLaut ? '🦜' : ($temaKebun ? '🦋' : ($temaLebah ? '🍯' : ($temaPanda ? '🍃' : '💨')));
-$temaSmoke2 = $temaBajakLaut ? '⚓' : ($temaKebun ? '🍃' : ($temaLebah ? '🌻' : ($temaPanda ? '🌱' : '💨')));
+$seranggaEmoji = ['A' => '🪰', 'B' => '🦟', 'C' => '🦋', 'D' => '🪲'];
+$ikanEmoji = ['A' => '🐟', 'B' => '🐠', 'C' => '🦑', 'D' => '🦀'];
+$angkasaEmoji = ['A' => '⭐', 'B' => '🪐', 'C' => '☄️', 'D' => '🌙'];
+$monsterEmoji = ['A' => '🐲', 'B' => '👹', 'C' => '🦇', 'D' => '🕷️'];
+$temaSceneClass = $temaKebun ? ' tema-kebun' : ($temaBajakLaut ? ' tema-bajak-laut' : ($temaLebah ? ' tema-lebah' : ($temaPanda ? ' tema-panda' : ($temaKatak ? ' tema-katak' : ($temaPenguin ? ' tema-penguin' : ($temaAstronot ? ' tema-astronot' : ($temaKsatria ? ' tema-ksatria' : '')))))));
+$temaSmoke1 = $temaBajakLaut ? '🦜' : ($temaKebun ? '🦋' : ($temaLebah ? '🍯' : ($temaPanda ? '🍃' : ($temaKatak ? '🪷' : ($temaPenguin ? '❄️' : ($temaAstronot ? '⭐' : ($temaKsatria ? '🔥' : '💨')))))));
+$temaSmoke2 = $temaBajakLaut ? '⚓' : ($temaKebun ? '🍃' : ($temaLebah ? '🌻' : ($temaPanda ? '🌱' : ($temaKatak ? '🌿' : ($temaPenguin ? '💠' : ($temaAstronot ? '🌌' : ($temaKsatria ? '⚔️' : '💨')))))));
 
-function temaIkonHasil($opt, $stateClass, $temaBajakLaut, $temaKebun, $temaLebah, $temaPanda, $bungaEmoji, $bungaEmojiLebah) {
+function temaIkonHasil($opt, $stateClass, $temaBajakLaut, $temaKebun, $temaLebah, $temaPanda, $temaKatak, $temaPenguin, $temaAstronot, $temaKsatria, $bungaEmoji, $bungaEmojiLebah, $seranggaEmoji, $ikanEmoji, $angkasaEmoji, $monsterEmoji) {
     if ($temaBajakLaut) {
         if ($stateClass === 'window-correct' || $stateClass === 'window-reveal') {
             return '💰';
@@ -58,6 +66,36 @@ function temaIkonHasil($opt, $stateClass, $temaBajakLaut, $temaKebun, $temaLebah
     if ($temaPanda) {
         return $stateClass === 'window-wrong' ? '🍂' : '🎋';
     }
+    if ($temaKatak) {
+        if ($stateClass === 'window-correct' || $stateClass === 'window-reveal') {
+            return '✨';
+        }
+        if ($stateClass === 'window-wrong') {
+            return '💨';
+        }
+        return $seranggaEmoji[$opt];
+    }
+    if ($temaPenguin) {
+        if ($stateClass === 'window-wrong') {
+            return '💦';
+        }
+        return $ikanEmoji[$opt];
+    }
+    if ($temaAstronot) {
+        if ($stateClass === 'window-wrong') {
+            return '💫';
+        }
+        return $angkasaEmoji[$opt];
+    }
+    if ($temaKsatria) {
+        if ($stateClass === 'window-correct' || $stateClass === 'window-reveal') {
+            return '💥';
+        }
+        if ($stateClass === 'window-wrong') {
+            return '💨';
+        }
+        return $monsterEmoji[$opt];
+    }
     return $stateClass === 'window-correct' ? '💨' : '🔥';
 }
 
@@ -75,7 +113,7 @@ if (!isset($_SESSION['xp'])) {
 }
 
 if (!isset($_SESSION['nyawa'])) {
-    $_SESSION['nyawa'] = 3;
+    $_SESSION['nyawa'] = 5;
 }
 
 if ($benar) {
@@ -90,6 +128,21 @@ $gameOver = ($nyawaSisa <= 0);
 $skorSaatIni = $_SESSION['skor'];
 
 $next = $nomor + 1;
+
+if ($gameOver || $next >= $total) {
+    unset($_SESSION['posisi_terakhir']);
+} else {
+    $_SESSION['posisi_terakhir'] = $next;
+}
+
+/* ===========================
+   Checkpoint istirahat tiap 10 soal
+=========================== */
+
+$checkpointSize = 10;
+$isCheckpoint = (!$gameOver && $next < $total && $next % $checkpointSize === 0);
+$checkpointNum = $isCheckpoint ? intdiv($next, $checkpointSize) : 0;
+$totalCheckpoint = (int) ceil($total / $checkpointSize);
 ?>
 
 <!DOCTYPE html>
@@ -119,7 +172,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 <div class="hud">
 
 <div class="hud-item hud-nyawa">
-<?php for ($i = 0; $i < 3; $i++): ?>
+<?php for ($i = 0; $i < 5; $i++): ?>
 <i class="fa-solid fa-heart <?= $i < $nyawaSisa ? 'heart-active' : 'heart-lost'; ?>"></i>
 <?php endfor; ?>
 </div>
@@ -145,11 +198,19 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         echo $benar ? ' lebah-bawa-nektar' : ' lebah-pulang-kosong';
     } elseif ($temaPanda) {
         echo $benar ? ' panda-senang' : ' panda-kecewa';
+    } elseif ($temaKatak) {
+        echo $benar ? ' katak-senang' : ' katak-kecewa';
+    } elseif ($temaPenguin) {
+        echo $benar ? ' penguin-senang' : ' penguin-kecewa';
+    } elseif ($temaAstronot) {
+        echo $benar ? ' astronot-senang' : ' astronot-kecewa';
+    } elseif ($temaKsatria) {
+        echo $benar ? ' ksatria-senang' : ' ksatria-kecewa';
     }
 ?>">
 <?= $benar
-    ? ($temaBajakLaut ? '🏴‍☠️' : ($temaKebun ? '🧑‍🌾' : ($temaLebah ? '🐝' : ($temaPanda ? '🐼' : '🧑‍🚒'))))
-    : ($temaLebah ? '🐝' : ($temaPanda ? '🐼' : '😥')); ?>
+    ? ($temaBajakLaut ? '🏴‍☠️' : ($temaKebun ? '🧑‍🌾' : ($temaLebah ? '🐝' : ($temaPanda ? '🐼' : ($temaKatak ? '🐸' : ($temaPenguin ? '🐧' : ($temaAstronot ? '🧑‍🚀' : ($temaKsatria ? '🤺' : '🧑‍🚒'))))))))
+    : ($temaLebah ? '🐝' : ($temaPanda ? '🐼' : ($temaKatak ? '🐸' : ($temaPenguin ? '🐧' : ($temaAstronot ? '🧑‍🚀' : ($temaKsatria ? '🤺' : '😥')))))); ?>
 </div>
 </div>
 
@@ -176,7 +237,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
     $dimmed = (!$isChosen && !($isCorrect && !$benar));
 
-    $flameIcon = temaIkonHasil($opt, $stateClass, $temaBajakLaut, $temaKebun, $temaLebah, $temaPanda, $bungaEmoji, $bungaEmojiLebah);
+    $flameIcon = temaIkonHasil($opt, $stateClass, $temaBajakLaut, $temaKebun, $temaLebah, $temaPanda, $temaKatak, $temaPenguin, $temaAstronot, $temaKsatria, $bungaEmoji, $bungaEmojiLebah, $seranggaEmoji, $ikanEmoji, $angkasaEmoji, $monsterEmoji);
 ?>
 
 <div class="target-unit <?= $dimmed ? 'locked' : ''; ?>">
@@ -203,12 +264,12 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 <?php if ($benar): ?>
 
 <strong>✅ JAWABAN BENAR</strong>
-<p><?= $temaBajakLaut ? 'Peti harta terbuka, harta ditemukan!' : ($temaKebun ? 'Bunga mekar dan segar!' : ($temaLebah ? 'Lebah membawa nektar ke sarang!' : ($temaPanda ? 'Bambu tumbuh tinggi, hijau, dan segar!' : 'Api mengecil!'))); ?> +<?= $poin; ?> poin</p>
+<p><?= $temaBajakLaut ? 'Peti harta terbuka, harta ditemukan!' : ($temaKebun ? 'Bunga mekar dan segar!' : ($temaLebah ? 'Lebah membawa nektar ke sarang!' : ($temaPanda ? 'Bambu tumbuh tinggi, hijau, dan segar!' : ($temaKatak ? 'Serangga berhasil tertangkap oleh lidah katak!' : ($temaPenguin ? 'Ikan berhasil ditangkap penguin!' : ($temaAstronot ? 'Bintang berhasil dikumpulkan astronot!' : ($temaKsatria ? 'Monster berhasil dikalahkan ksatria!' : 'Api mengecil!'))))))); ?> +<?= $poin; ?> poin</p>
 
 <?php else: ?>
 
 <strong>❌ JAWABAN SALAH</strong>
-<p><?= $temaBajakLaut ? 'Peti tetap terkunci!' : ($temaKebun ? 'Bunga jadi layu!' : ($temaLebah ? 'Bunga menutup, lebah pulang tanpa nektar!' : ($temaPanda ? 'Bambu layu, menguning, dan daunnya rontok!' : 'Api membesar!'))); ?> -1 nyawa</p>
+<p><?= $temaBajakLaut ? 'Peti tetap terkunci!' : ($temaKebun ? 'Bunga jadi layu!' : ($temaLebah ? 'Bunga menutup, lebah pulang tanpa nektar!' : ($temaPanda ? 'Bambu layu, menguning, dan daunnya rontok!' : ($temaKatak ? 'Serangga berhasil kabur, katak kecewa!' : ($temaPenguin ? 'Ikan berhasil kabur, penguin kecewa!' : ($temaAstronot ? 'Bintang melayang menjauh, astronot kehabisan energi!' : ($temaKsatria ? 'Serangan meleset, monster balik menyerang!' : 'Api membesar!'))))))); ?> -1 nyawa</p>
 
 <?php endif; ?>
 
@@ -224,6 +285,45 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 </div>
 
 </div>
+
+<?php if ($isCheckpoint): ?>
+
+<div class="checkpoint-box">
+
+<div class="checkpoint-icon">🏁</div>
+
+<h2>Checkpoint <?= $checkpointNum; ?>/<?= $totalCheckpoint; ?> Selesai!</h2>
+
+<p><?= $next; ?> dari <?= $total; ?> soal sudah kamu kerjakan. Istirahat sebentar, lalu lanjutkan lagi ya!</p>
+
+<div class="checkpoint-stats">
+<div class="checkpoint-stat"><i class="fa-solid fa-star"></i> <?= $skorSaatIni; ?> Skor</div>
+<div class="checkpoint-stat"><i class="fa-solid fa-heart"></i> <?= $nyawaSisa; ?>/5 Nyawa</div>
+</div>
+
+<div class="checkpoint-progress">
+<div class="checkpoint-progress-fill" style="width:<?= round($next / $total * 100); ?>%"></div>
+</div>
+
+</div>
+
+<div style="text-align:center;">
+
+<a href="quiz.php?kategori=<?= $kategori ?>&level=<?= urlencode($level) ?>&no=<?= $next ?>">
+
+<button class="btn-lanjut btn-checkpoint">Lanjutkan Quiz ➜</button>
+
+</a>
+
+<a href="kategori.php">
+
+<button class="btn-lanjut btn-secondary">Istirahat Dulu, Kembali ke Kategori</button>
+
+</a>
+
+</div>
+
+<?php else: ?>
 
 <div style="text-align:center;">
 
@@ -262,6 +362,8 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 </a>
 
 </div>
+
+<?php endif; ?>
 
 </div>
 

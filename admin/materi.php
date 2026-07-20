@@ -1,5 +1,6 @@
 <?php
 require __DIR__ . "/auth.php";
+require __DIR__ . "/../inc/functions.php";
 
 $pesan = "";
 $pesanTipe = "success";
@@ -39,6 +40,7 @@ if (isset($_POST['simpan'])) {
         $stmt = mysqli_prepare($conn, "INSERT INTO materi (kategori_id, judul, isi, urutan) VALUES (?,?,?,?)");
         mysqli_stmt_bind_param($stmt, "issi", $kategori_id, $judul, $isi, $urutan);
         mysqli_stmt_execute($stmt);
+        logAktivitas($conn, 'materi_baru', 'Admin menambahkan materi baru "' . e($judul) . '".', 'fa-book', 'purple');
         $pesan = "Materi baru berhasil ditambahkan.";
 
     }
@@ -147,8 +149,6 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 <span>BPS</span>
 </div>
 </div>
-
-<a href="index.php" class="back-link"><i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard</a>
 
 <div class="admin-topbar">
 

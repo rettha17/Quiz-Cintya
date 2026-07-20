@@ -1,9 +1,10 @@
 <?php
 require_once "auth.php";
+require_once __DIR__ . "/../inc/functions.php";
 
 $activeMenu = "game";
 
-$levelOptions = ['Mudah', 'Sedang', 'Sulit'];
+$levelOptions = levelList();
 
 $daftarKategori = mysqli_query($conn, "SELECT * FROM kategori ORDER BY nama");
 $kategoriOptions = [];
@@ -12,7 +13,7 @@ while ($k = mysqli_fetch_assoc($daftarKategori)) {
 }
 
 $filterKategori = isset($_GET['kategori']) ? (int) $_GET['kategori'] : 0;
-$filterLevel = in_array($_GET['level'] ?? '', $levelOptions, true) ? $_GET['level'] : 'Mudah';
+$filterLevel = levelValid($_GET['level'] ?? 'Mudah');
 
 $where = "level = ?";
 $params = [$filterLevel];
@@ -36,6 +37,130 @@ if ($soal) {
     mysqli_stmt_execute($stmt);
     $kategoriInfo = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 }
+
+/* ===========================
+   Tema quiz — mengikuti pola yang sama persis dengan
+   pengguna/quiz.php & pengguna/cek_jawaban.php
+=========================== */
+
+$temaQuiz = $soal ? temaQuizAktif($kategoriInfo['nama'] ?? '', $filterLevel) : '';
+$temaKebun = ($temaQuiz === 'kebun');
+$temaBajakLaut = ($temaQuiz === 'bajak-laut');
+$temaLebah = ($temaQuiz === 'lebah');
+$temaPanda = ($temaQuiz === 'panda');
+$temaKatak = ($temaQuiz === 'katak');
+$temaPenguin = ($temaQuiz === 'penguin');
+$temaAstronot = ($temaQuiz === 'astronot');
+$temaKsatria = ($temaQuiz === 'ksatria');
+$bungaEmoji = ['A' => '🌺', 'B' => '🪻', 'C' => '🌻', 'D' => '🌼'];
+$bungaEmojiLebah = ['A' => '🌸', 'B' => '🪷', 'C' => '🌻', 'D' => '🌼'];
+$seranggaEmoji = ['A' => '🪰', 'B' => '🦟', 'C' => '🦋', 'D' => '🪲'];
+$ikanEmoji = ['A' => '🐟', 'B' => '🐠', 'C' => '🦑', 'D' => '🦀'];
+$angkasaEmoji = ['A' => '⭐', 'B' => '🪐', 'C' => '☄️', 'D' => '🌙'];
+$monsterEmoji = ['A' => '🐲', 'B' => '👹', 'C' => '🦇', 'D' => '🕷️'];
+
+$temaSceneClass = $temaKebun ? ' tema-kebun' : ($temaBajakLaut ? ' tema-bajak-laut' : ($temaLebah ? ' tema-lebah' : ($temaPanda ? ' tema-panda' : ($temaKatak ? ' tema-katak' : ($temaPenguin ? ' tema-penguin' : ($temaAstronot ? ' tema-astronot' : ($temaKsatria ? ' tema-ksatria' : '')))))));
+$temaKarakter = $temaBajakLaut ? '🏴‍☠️' : ($temaKebun ? '🧑‍🌾' : ($temaLebah ? '🐝' : ($temaPanda ? '🐼' : ($temaKatak ? '🐸' : ($temaPenguin ? '🐧' : ($temaAstronot ? '🧑‍🚀' : ($temaKsatria ? '🤺' : '🧑‍🚒')))))));
+$temaKarakterSalah = ($temaLebah ? '🐝' : ($temaPanda ? '🐼' : ($temaKatak ? '🐸' : ($temaPenguin ? '🐧' : ($temaAstronot ? '🧑‍🚀' : ($temaKsatria ? '🤺' : '😥'))))));
+$temaHitIcon = $temaBajakLaut ? '✨' : ($temaKebun ? '💧' : ($temaLebah ? '🍯' : ($temaPanda ? '🍃' : ($temaKatak ? '👅' : ($temaPenguin ? '💦' : ($temaAstronot ? '✨' : ($temaKsatria ? '💥' : '💨')))))));
+$temaSmoke1 = $temaBajakLaut ? '🦜' : ($temaKebun ? '🦋' : ($temaLebah ? '🍯' : ($temaPanda ? '🍃' : ($temaKatak ? '🪷' : ($temaPenguin ? '❄️' : ($temaAstronot ? '⭐' : ($temaKsatria ? '🔥' : '💨')))))));
+$temaSmoke2 = $temaBajakLaut ? '⚓' : ($temaKebun ? '🍃' : ($temaLebah ? '🌻' : ($temaPanda ? '🌱' : ($temaKatak ? '🌿' : ($temaPenguin ? '💠' : ($temaAstronot ? '🌌' : ($temaKsatria ? '⚔️' : '💨')))))));
+
+$temaStateSenang = $temaLebah ? 'lebah-bawa-nektar' : ($temaPanda ? 'panda-senang' : ($temaKatak ? 'katak-senang' : ($temaPenguin ? 'penguin-senang' : ($temaAstronot ? 'astronot-senang' : ($temaKsatria ? 'ksatria-senang' : '')))));
+$temaStateKecewa = $temaLebah ? 'lebah-pulang-kosong' : ($temaPanda ? 'panda-kecewa' : ($temaKatak ? 'katak-kecewa' : ($temaPenguin ? 'penguin-kecewa' : ($temaAstronot ? 'astronot-kecewa' : ($temaKsatria ? 'ksatria-kecewa' : '')))));
+
+$temaPesanBenar = $temaBajakLaut ? 'Peti harta terbuka, harta ditemukan!' : ($temaKebun ? 'Bunga mekar dan segar!' : ($temaLebah ? 'Lebah membawa nektar ke sarang!' : ($temaPanda ? 'Bambu tumbuh tinggi, hijau, dan segar!' : ($temaKatak ? 'Serangga berhasil tertangkap oleh lidah katak!' : ($temaPenguin ? 'Ikan berhasil ditangkap penguin!' : ($temaAstronot ? 'Bintang berhasil dikumpulkan astronot!' : ($temaKsatria ? 'Monster berhasil dikalahkan ksatria!' : 'Api mengecil!')))))));
+$temaPesanSalah = $temaBajakLaut ? 'Peti tetap terkunci!' : ($temaKebun ? 'Bunga jadi layu!' : ($temaLebah ? 'Bunga menutup, lebah pulang tanpa nektar!' : ($temaPanda ? 'Bambu layu, menguning, dan daunnya rontok!' : ($temaKatak ? 'Serangga berhasil kabur, katak kecewa!' : ($temaPenguin ? 'Ikan berhasil kabur, penguin kecewa!' : ($temaAstronot ? 'Bintang melayang menjauh, astronot kehabisan energi!' : ($temaKsatria ? 'Serangan meleset, monster balik menyerang!' : 'Api membesar!')))))));
+
+function temaIkonOpsi($opt, $temaBajakLaut, $temaKebun, $temaLebah, $temaPanda, $temaKatak, $temaPenguin, $temaAstronot, $temaKsatria, $bungaEmoji, $bungaEmojiLebah, $seranggaEmoji, $ikanEmoji, $angkasaEmoji, $monsterEmoji) {
+    if ($temaBajakLaut) {
+        return '🔒';
+    }
+    if ($temaKebun) {
+        return $bungaEmoji[$opt];
+    }
+    if ($temaLebah) {
+        return $bungaEmojiLebah[$opt];
+    }
+    if ($temaPanda) {
+        return '🎋';
+    }
+    if ($temaKatak) {
+        return $seranggaEmoji[$opt];
+    }
+    if ($temaPenguin) {
+        return $ikanEmoji[$opt];
+    }
+    if ($temaAstronot) {
+        return $angkasaEmoji[$opt];
+    }
+    if ($temaKsatria) {
+        return $monsterEmoji[$opt];
+    }
+    return '🔥';
+}
+
+function temaIkonHasil($opt, $stateClass, $temaBajakLaut, $temaKebun, $temaLebah, $temaPanda, $temaKatak, $temaPenguin, $temaAstronot, $temaKsatria, $bungaEmoji, $bungaEmojiLebah, $seranggaEmoji, $ikanEmoji, $angkasaEmoji, $monsterEmoji) {
+    if ($temaBajakLaut) {
+        if ($stateClass === 'window-correct') {
+            return '💰';
+        }
+        if ($stateClass === 'window-wrong') {
+            return '💨';
+        }
+        return '🔒';
+    }
+    if ($temaKebun) {
+        return $bungaEmoji[$opt];
+    }
+    if ($temaLebah) {
+        return $stateClass === 'window-wrong' ? '🌷' : $bungaEmojiLebah[$opt];
+    }
+    if ($temaPanda) {
+        return $stateClass === 'window-wrong' ? '🍂' : '🎋';
+    }
+    if ($temaKatak) {
+        if ($stateClass === 'window-correct') {
+            return '✨';
+        }
+        if ($stateClass === 'window-wrong') {
+            return '💨';
+        }
+        return $seranggaEmoji[$opt];
+    }
+    if ($temaPenguin) {
+        if ($stateClass === 'window-wrong') {
+            return '💦';
+        }
+        return $ikanEmoji[$opt];
+    }
+    if ($temaAstronot) {
+        if ($stateClass === 'window-wrong') {
+            return '💫';
+        }
+        return $angkasaEmoji[$opt];
+    }
+    if ($temaKsatria) {
+        if ($stateClass === 'window-correct') {
+            return '💥';
+        }
+        if ($stateClass === 'window-wrong') {
+            return '💨';
+        }
+        return $monsterEmoji[$opt];
+    }
+    return $stateClass === 'window-correct' ? '💨' : '🔥';
+}
+
+$opsiIconAwal = [];
+$opsiIconBenar = [];
+$opsiIconSalah = [];
+
+foreach (['A', 'B', 'C', 'D'] as $opt) {
+    $opsiIconAwal[$opt] = temaIkonOpsi($opt, $temaBajakLaut, $temaKebun, $temaLebah, $temaPanda, $temaKatak, $temaPenguin, $temaAstronot, $temaKsatria, $bungaEmoji, $bungaEmojiLebah, $seranggaEmoji, $ikanEmoji, $angkasaEmoji, $monsterEmoji);
+    $opsiIconBenar[$opt] = temaIkonHasil($opt, 'window-correct', $temaBajakLaut, $temaKebun, $temaLebah, $temaPanda, $temaKatak, $temaPenguin, $temaAstronot, $temaKsatria, $bungaEmoji, $bungaEmojiLebah, $seranggaEmoji, $ikanEmoji, $angkasaEmoji, $monsterEmoji);
+    $opsiIconSalah[$opt] = temaIkonHasil($opt, 'window-wrong', $temaBajakLaut, $temaKebun, $temaLebah, $temaPanda, $temaKatak, $temaPenguin, $temaAstronot, $temaKsatria, $bungaEmoji, $bungaEmojiLebah, $seranggaEmoji, $ikanEmoji, $angkasaEmoji, $monsterEmoji);
+}
 ?>
 
 <!DOCTYPE html>
@@ -48,7 +173,9 @@ if ($soal) {
 
 <title>Preview Game | Admin Quiz Challenge BPS</title>
 
-<link rel="stylesheet" href="../assets/css/quiz.css?v=<?= filemtime(__DIR__ . "/../assets/css/quiz.css"); ?>">
+<link rel="stylesheet" href="../pengguna/assets/css/quiz.css?v=<?= filemtime(__DIR__ . "/../pengguna/assets/css/quiz.css"); ?>">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -116,6 +243,18 @@ body{
     font-family:'Poppins',sans-serif;
 }
 
+.preview-tema-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:#E3F2FD;
+    color:#1565C0;
+    font-weight:700;
+    font-size:12.5px;
+    padding:8px 14px;
+    border-radius:20px;
+}
+
 .preview-empty{
     max-width:600px;
     margin:60px auto;
@@ -164,6 +303,8 @@ body{
 <?php } ?>
 </select>
 
+<span class="preview-tema-badge"><i class="fa-solid fa-palette"></i> Tema: <?= $temaQuiz !== '' ? e(ucwords(str_replace('-', ' ', $temaQuiz))) : 'Pemadam Kebakaran (default)'; ?></span>
+
 </form>
 
 <div style="max-width:900px;margin:20px auto;padding:0 15px 40px;">
@@ -173,6 +314,8 @@ body{
 <div class="hud">
 
 <div class="hud-item hud-nyawa" id="nyawaBox">
+<i class="fa-solid fa-heart heart-active"></i>
+<i class="fa-solid fa-heart heart-active"></i>
 <i class="fa-solid fa-heart heart-active"></i>
 <i class="fa-solid fa-heart heart-active"></i>
 <i class="fa-solid fa-heart heart-active"></i>
@@ -196,14 +339,18 @@ body{
 <h3><?= e($soal['pertanyaan']); ?></h3>
 </div>
 
-<div class="fire-scene" id="fireScene">
+<div class="fire-scene<?= $temaSceneClass; ?>" id="fireScene" data-hit-icon="<?= e($temaHitIcon); ?>">
 
-<span class="smoke-bg smoke1">💨</span>
-<span class="smoke-bg smoke2">💨</span>
+<span class="smoke-bg smoke1"><?= $temaSmoke1; ?></span>
+<span class="smoke-bg smoke2"><?= $temaSmoke2; ?></span>
 
 <div class="firefighter-wrap">
-<div class="firefighter" id="firefighter">🧑‍🚒</div>
+<div class="firefighter" id="firefighter"><?= $temaKarakter; ?></div>
 </div>
+
+<?php if ($temaLebah) { ?>
+<div class="sarang-lebah" id="sarangLebah">🍯</div>
+<?php } ?>
 
 <div class="targets" id="targets">
 
@@ -212,7 +359,7 @@ body{
 <button type="button" class="target-unit" data-jawaban="<?= $huruf; ?>">
 <span class="window window-<?= $key; ?>">
 <span class="window-badge"><?= $huruf; ?></span>
-<span class="flame">🔥</span>
+<span class="flame"><?= $opsiIconAwal[$huruf]; ?></span>
 </span>
 <span class="target-label label-<?= $key; ?>"><?= e($soal['opsi_' . $key]); ?></span>
 </button>
@@ -240,17 +387,26 @@ const PEMBAHASAN = <?= json_encode(e($soal['pembahasan'])); ?>;
 const KATEGORI_ID = <?= (int) $filterKategori; ?>;
 const LEVEL = <?= json_encode($filterLevel); ?>;
 
+const KARAKTER_BENAR = <?= json_encode($temaKarakter); ?>;
+const KARAKTER_SALAH = <?= json_encode($temaKarakterSalah); ?>;
+const STATE_SENANG = <?= json_encode($temaStateSenang); ?>;
+const STATE_KECEWA = <?= json_encode($temaStateKecewa); ?>;
+const PESAN_BENAR = <?= json_encode($temaPesanBenar); ?>;
+const PESAN_SALAH = <?= json_encode($temaPesanSalah); ?>;
+const IS_LEBAH = <?= $temaLebah ? 'true' : 'false'; ?>;
+
+const ICON_BENAR = <?= json_encode($opsiIconBenar); ?>;
+const ICON_SALAH = <?= json_encode($opsiIconSalah); ?>;
+
 let sudahJawab = false;
 let skor = 0;
 
+const fireScene = document.getElementById("fireScene");
 const firefighter = document.getElementById("firefighter");
 const waterFly = document.getElementById("waterFly");
 const skorBox = document.getElementById("skorBox");
 const hasilArea = document.getElementById("hasilArea");
-
-function labelUntuk(huruf){
-    return document.querySelector(".target-unit[data-jawaban='" + huruf + "'] .target-label").textContent;
-}
+const sarangLebah = document.getElementById("sarangLebah");
 
 document.querySelectorAll(".target-unit").forEach(function(target){
 
@@ -282,6 +438,9 @@ document.querySelectorAll(".target-unit").forEach(function(target){
         waterFly.style.transform = `rotate(${sudut}deg) scaleX(0)`;
         waterFly.style.opacity = "1";
 
+        const flame = target.querySelector(".flame");
+        if (flame) flame.textContent = fireScene.dataset.hitIcon || "💨";
+
         firefighter.classList.add("firefighter-spray");
 
         requestAnimationFrame(function(){
@@ -307,7 +466,14 @@ document.querySelectorAll(".target-unit").forEach(function(target){
 
 function selesaikanJawaban(jawaban, benar){
 
-    firefighter.textContent = benar ? "🧑‍🚒" : "😥";
+    firefighter.textContent = benar ? KARAKTER_BENAR : KARAKTER_SALAH;
+    firefighter.classList.remove("firefighter-spray");
+    const stateClassKarakter = benar ? STATE_SENANG : STATE_KECEWA;
+    if (stateClassKarakter) firefighter.classList.add(stateClassKarakter);
+
+    if (sarangLebah) {
+        sarangLebah.classList.add(benar ? "sarang-terisi" : "sarang-kosong");
+    }
 
     document.querySelectorAll(".target-unit").forEach(function(t){
 
@@ -327,8 +493,10 @@ function selesaikanJawaban(jawaban, benar){
         if (dimmed) t.classList.add("locked");
         if (stateClass) win.classList.add(stateClass);
 
-        if (stateClass === "window-correct") {
-            flame.textContent = "💨";
+        if (stateClass === "window-correct" || stateClass === "window-reveal") {
+            flame.textContent = ICON_BENAR[huruf];
+        } else if (stateClass === "window-wrong") {
+            flame.textContent = ICON_SALAH[huruf];
         }
 
         if (stateClass === "window-reveal") {
@@ -349,7 +517,7 @@ function selesaikanJawaban(jawaban, benar){
     hasilArea.innerHTML = `
         <div class="hasil-banner ${benar ? 'banner-benar' : 'banner-salah'}">
             <strong>${benar ? '✅ JAWABAN BENAR' : '❌ JAWABAN SALAH'}</strong>
-            <p>${benar ? 'Api mengecil! +' + poin + ' poin' : 'Api membesar! -1 nyawa'}</p>
+            <p>${benar ? PESAN_BENAR + ' +' + poin + ' poin' : PESAN_SALAH + ' -1 nyawa'}</p>
         </div>
         <div class="pembahasan-box">
             <div class="pembahasan-icon">💡</div>

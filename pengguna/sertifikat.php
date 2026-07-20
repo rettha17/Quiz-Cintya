@@ -35,6 +35,21 @@ if($totalQuiz < 3){
     </h2>
     ");
 }
+
+// Catat sekali saja per pengguna (bukan tiap kali halaman dibuka).
+$stmt = mysqli_prepare($conn, "SELECT id FROM activity_log WHERE tipe='sertifikat' AND user_id=?");
+mysqli_stmt_bind_param($stmt, "i", $user_id);
+mysqli_stmt_execute($stmt);
+if (!mysqli_fetch_assoc(mysqli_stmt_get_result($stmt))) {
+    logAktivitas(
+        $conn,
+        'sertifikat',
+        'Sertifikat ' . e($noSertifikat) . ' berhasil diterbitkan untuk ' . e($user['nama']) . '.',
+        'fa-certificate',
+        'orange',
+        $user_id
+    );
+}
 ?>
 
 <!DOCTYPE html>
@@ -55,8 +70,6 @@ if($totalQuiz < 3){
 </head>
 
 <body>
-
-<a href="dashboard.php" class="back-link">← Kembali ke Dashboard</a>
 
 <div class="certificate">
 

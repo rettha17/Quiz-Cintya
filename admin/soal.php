@@ -1,5 +1,6 @@
 <?php
 require __DIR__ . "/auth.php";
+require __DIR__ . "/../inc/functions.php";
 
 $pesan = "";
 $pesanTipe = "success";
@@ -58,6 +59,12 @@ if (isset($_POST['simpan'])) {
         $stmt = mysqli_prepare($conn, $sql);
         mysqli_stmt_bind_param($stmt, $types, ...$params);
         mysqli_stmt_execute($stmt);
+
+        $namaKategoriLog = 'kategori';
+        foreach ($kategoriOptions as $k) {
+            if ($k['id'] == $kategori_id) { $namaKategoriLog = $k['nama']; break; }
+        }
+        logAktivitas($conn, 'soal_baru', 'Admin menambahkan soal baru ke kategori ' . e($namaKategoriLog) . '.', 'fa-circle-question', 'orange');
 
         $pesan = "Soal baru berhasil ditambahkan.";
 

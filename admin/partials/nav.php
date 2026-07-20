@@ -11,20 +11,25 @@ $activeMenu = $activeMenu ?? '';
 
 <div class="admin-sidebar-backdrop" id="adminSidebarBackdrop"></div>
 
-<aside class="admin-sidebar" id="adminSidebar">
-
-<button type="button" class="admin-rail-toggle" id="adminRailToggle" aria-label="Perluas menu">
-<i class="fa-solid fa-chevron-right"></i>
-</button>
+<aside class="admin-sidebar expanded" id="adminSidebar">
 
 <div class="admin-logo">
 
 <div class="admin-logo-icon">
-<i class="fa-solid fa-user-shield"></i>
+<svg viewBox="0 0 40 40" class="admin-logo-chart" aria-hidden="true">
+<polyline points="5,22 13,16 20,19 32,7" fill="none" stroke="#FFA726" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="25,7 32,7 32,14" fill="none" stroke="#FFA726" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="5" y="23" width="5" height="8" rx="1.5" fill="#fff"/>
+<rect x="13" y="19" width="5" height="12" rx="1.5" fill="#fff"/>
+<rect x="21" y="15" width="5" height="16" rx="1.5" fill="#fff"/>
+<rect x="29" y="8" width="5" height="23" rx="1.5" fill="#fff"/>
+<rect x="5" y="33" width="29" height="2.5" rx="1.25" fill="#fff"/>
+</svg>
+<span class="admin-logo-badge"><i class="fa-solid fa-shield-halved"></i></span>
 </div>
 
 <div>
-<h2>Admin Panel</h2>
+<h2><span class="admin-logo-admin">Admin</span> <span class="admin-logo-panel">Panel</span></h2>
 <p>Quiz Challenge BPS</p>
 </div>
 
@@ -92,14 +97,6 @@ $activeMenu = $activeMenu ?? '';
 
 <div class="admin-sidebar-footer">
 
-<a href="../pengguna/dashboard.php" class="admin-rail-card" title="Ke Aplikasi">
-<span class="admin-rail-card-icon"><i class="fa-solid fa-arrow-left"></i></span>
-<span class="admin-rail-card-text">
-<b>Ke Aplikasi</b>
-<span>Kembali ke sisi pengguna</span>
-</span>
-</a>
-
 <button type="button" class="admin-theme-toggle" id="adminThemeToggle" title="Ganti Tema">
 <i class="fa-solid fa-moon"></i>
 <span>Mode Gelap</span>
@@ -110,6 +107,10 @@ $activeMenu = $activeMenu ?? '';
 <span>Logout</span>
 </a>
 
+<div class="admin-mascot-block">
+<img src="assets/img/sidebar-mascot-panel.png" alt="Quiz Challenge BPS - Jelajah Statistik Indonesia" class="mascot-panel-img">
+</div>
+
 </div>
 
 </aside>
@@ -119,7 +120,6 @@ $activeMenu = $activeMenu ?? '';
     var sidebar = document.getElementById("adminSidebar");
     var toggle = document.getElementById("adminSidebarToggle");
     var backdrop = document.getElementById("adminSidebarBackdrop");
-    var railToggle = document.getElementById("adminRailToggle");
     var themeToggle = document.getElementById("adminThemeToggle");
     var SIDEBAR_WIDTH = 270;
     var EDGE_ZONE = 24;
@@ -174,19 +174,6 @@ $activeMenu = $activeMenu ?? '';
 
     Array.prototype.forEach.call(sidebar.querySelectorAll("a"), function(link){
         link.addEventListener("click", closeSidebar);
-    });
-
-    /* ---- desktop rail expand/collapse ---- */
-    railToggle.addEventListener("click", function(e){
-        e.stopPropagation();
-        sidebar.classList.toggle("expanded");
-    });
-
-    document.addEventListener("click", function(e){
-        if (isMobile()) return;
-        if (!sidebar.classList.contains("expanded")) return;
-        if (sidebar.contains(e.target)) return;
-        sidebar.classList.remove("expanded");
     });
 
     /* ---- swipe / drag gesture (mobile) ---- */

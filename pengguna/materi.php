@@ -11,6 +11,13 @@ $statusLabel = [
     'selesai' => ['Selesai', 'fa-circle-check'],
 ];
 
+// Ikon kartu kategori berupa gambar ilustrasi asli (bukan simbol FontAwesome)
+$kategoriIkonKartu = [
+    'Statistika Dasar' => 'qc-illus-statistika.jpg',
+    'Pengenalan BPS' => 'qc-illus-bps.jpg',
+    'Indikator Statistik' => 'qc-illus-indikator.jpg',
+];
+
 // Gambar topik (per id materi), tersimpan di assets/img sesuai judul topiknya
 $topikImages = [
     2 => 'Mean, Median dan Modus.jpg',
@@ -76,8 +83,6 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 </div>
 </div>
 
-<a href="dashboard.php" class="back-link"><i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard</a>
-
 <div class="section-title">
 
 <h2>Materi Pembelajaran</h2>
@@ -104,7 +109,11 @@ Baca dulu materinya, tandai selesai untuk mendapatkan XP, lalu klik <b>Mulai Qui
 <i class="fa-solid <?= e($k['icon']); ?> hero-watermark"></i>
 
 <div class="materi-hero-icon">
+<?php if (!empty($kategoriIkonKartu[$k['nama']])): ?>
+<img src="assets/img/<?= e($kategoriIkonKartu[$k['nama']]); ?>" alt="<?= e($k['nama']); ?>">
+<?php else: ?>
 <i class="fa-solid <?= e($k['icon']); ?>"></i>
+<?php endif; ?>
 </div>
 
 <div class="materi-hero-text">
@@ -197,6 +206,8 @@ Pelajari konsep dasar statistika yang penting untuk memahami data dan pengambila
 
 <?php endif; ?>
 
+<div class="materi-table-wrap">
+
 <table class="materi-table-v2">
 
 <thead>
@@ -215,8 +226,10 @@ Pelajari konsep dasar statistika yang penting untuk memahami data dan pengambila
 
 <?php foreach ($bagian as $i => $sub):
     if ($k['nama'] === 'Pengenalan BPS' && $i === 0) continue;
-    $snippet = trim(strip_tags($sub['isi']));
-    if (mb_strlen($snippet) > 90) $snippet = mb_substr($snippet, 0, 90) . '...';
+    $snippet = str_ireplace(['<br>', '<br/>', '<br />'], ' ', $sub['isi']);
+    $snippet = trim(html_entity_decode(strip_tags($snippet), ENT_QUOTES, 'UTF-8'));
+    $snippet = preg_replace('/\s+/u', ' ', $snippet);
+    if (mb_strlen($snippet) > 80) $snippet = mb_substr($snippet, 0, 80) . '...';
     $st = $sub['status'];
     $pct = $st === 'selesai' ? 100 : ($st === 'proses' ? 50 : 0);
     [$label, $icon] = $statusLabel[$st];
@@ -226,10 +239,12 @@ Pelajari konsep dasar statistika yang penting untuk memahami data dan pengambila
 <tr class="materi-row-v2" data-materi-id="<?= $sub['id']; ?>" data-status="<?= $st; ?>">
 <td class="num"><?= $i + 1; ?></td>
 <td class="topik-cell">
+<div class="topik-cell-inner">
 <span class="topik-icon <?= $topikIconColor; ?>">
 <?php if ($topikIconType === 'sigma'): ?>&Sigma;<?php else: ?><i class="fa-solid <?= $topikIconType; ?>"></i><?php endif; ?>
 </span>
 <?= e($sub['judul']); ?>
+</div>
 </td>
 <td class="deskripsi-cell"><?= e($snippet); ?></td>
 <td class="durasi-cell"><i class="fa-regular fa-clock"></i> <?= $sub['durasi_menit']; ?> Menit</td>
@@ -272,6 +287,8 @@ Pelajari konsep dasar statistika yang penting untuk memahami data dan pengambila
 </tbody>
 
 </table>
+
+</div>
 
 <div class="materi-summary">
 
@@ -358,15 +375,15 @@ Pelajari konsep dasar statistika yang penting untuk memahami data dan pengambila
         <h2>Pilih Level</h2>
 
         <a id="mudah">
-            <button class="btn-level green">🟢 Mudah</button>
+            <button class="btn-level green">😊 Mudah</button>
         </a>
 
         <a id="sedang">
-            <button class="btn-level orange">🟡 Sedang</button>
+            <button class="btn-level orange">😐 Sedang</button>
         </a>
 
         <a id="sulit">
-            <button class="btn-level red">🔴 Sulit</button>
+            <button class="btn-level red">😟 Sulit</button>
         </a>
 
     </div>

@@ -24,6 +24,34 @@ $avatarZoom = [
     9 => 1.04,
 ];
 
+// Avatar gratis: kategori "kartun" (avatar-01..09 + kartun-01..12, wajah kartun),
+// "kucing" (cat-01..10, stiker kucing), dan "lainnya" (hewan & ikon) digabung
+// jadi satu daftar untuk grid, difilter di sisi klien lewat tab kategori.
+$daftarAvatar = [];
+for ($i = 1; $i <= 9; $i++) {
+    $file = sprintf('avatar-%02d.jpg', $i);
+    $daftarAvatar[] = ['file' => $file, 'kategori' => 'kartun', 'zoom' => $avatarZoom[$i] ?? 1];
+}
+for ($i = 1; $i <= 12; $i++) {
+    $file = sprintf('kartun-%02d.jpg', $i);
+    $daftarAvatar[] = ['file' => $file, 'kategori' => 'kartun', 'zoom' => 1];
+}
+for ($i = 1; $i <= 10; $i++) {
+    $file = sprintf('cat-%02d.jpg', $i);
+    $daftarAvatar[] = ['file' => $file, 'kategori' => 'kucing', 'zoom' => 1.4];
+}
+for ($i = 1; $i <= 21; $i++) {
+    $file = sprintf('lainnya-%02d.jpg', $i);
+    $daftarAvatar[] = ['file' => $file, 'kategori' => 'lainnya', 'zoom' => 1];
+}
+
+function avatarZoomUntuk($file, $daftarAvatar) {
+    foreach ($daftarAvatar as $a) {
+        if ($a['file'] === $file) return $a['zoom'];
+    }
+    return 1;
+}
+
 if (isset($_POST['hapus_foto'])) {
 
     $folder = __DIR__ . "/assets/img/";
@@ -88,7 +116,7 @@ if (isset($_POST['hapus_foto'])) {
 
         }
 
-    } elseif ($avatarPilihan !== '' && preg_match('/^avatar-0[1-9]\.jpg$/', $avatarPilihan)) {
+    } elseif ($avatarPilihan !== '' && preg_match('/^(avatar-0[1-9]|kartun-(0[1-9]|1[0-2])|cat-(0[1-9]|10)|lainnya-(0[1-9]|1[0-9]|2[0-1]))\.jpg$/', $avatarPilihan)) {
 
         // Ganti ke avatar gratis bawaan
         if (fotoBolehDihapus($foto) && file_exists($folder.$foto)) {
@@ -177,21 +205,11 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 </div>
 </div>
 
-<a href="dashboard.php" class="back-link"><i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard</a>
+<div class="edit-profil-page">
 
-<div class="profile-page edit-mode">
-
-<div class="edit-header">
-
-<i class="fa-solid fa-image icon-watermark"></i>
-
-<h1>
-<i class="fa-solid fa-user-pen"></i>
-Edit Profil
-</h1>
-
-<p>Perbarui foto, nama, email, dan password akun kamu.</p>
-
+<div class="edit-profil-heading">
+<h1>Edit Profil</h1>
+<p>Kelola informasi profil dan avatar kamu</p>
 </div>
 
 <?php if($pesan!=""){ ?>
@@ -208,17 +226,32 @@ Edit Profil
 
 <form method="POST" enctype="multipart/form-data">
 
-<!-- FOTO -->
+<!-- AVATAR -->
 
-<div class="edit-photo">
+<div class="avatar-card">
+
+<div class="avatar-card-head">
+<h2>Avatar Profil</h2>
+<p>Pilih foto atau avatar untuk ditampilkan di profil kamu.</p>
+</div>
 
 <?php
 $fotoSaatIni = !empty($user['foto']) ? $user['foto'] : 'default.png';
 $previewZoom = '';
-if (preg_match('#^avatars/avatar-0([1-9])\.jpg$#', $fotoSaatIni, $m)) {
-    $previewZoom = 'transform:scale(' . ($avatarZoom[(int) $m[1]] ?? 1) . ');';
+if (preg_match('#^avatars/(.+)$#', $fotoSaatIni, $m)) {
+    $z = avatarZoomUntuk($m[1], $daftarAvatar);
+    if ($z != 1) $previewZoom = 'transform:scale(' . $z . ');';
+}
+
+$tabAktif = 'kucing';
+if (preg_match('#^avatars/(avatar-0[1-9]|kartun-\d\d)\.jpg$#', $fotoSaatIni)) {
+    $tabAktif = 'kartun';
+} elseif (preg_match('#^avatars/lainnya-\d\d\.jpg$#', $fotoSaatIni)) {
+    $tabAktif = 'lainnya';
 }
 ?>
+
+<div class="avatar-preview-wrap">
 
 <div class="avatar-frame">
 <img
@@ -227,21 +260,15 @@ src="assets/img/<?= e($fotoSaatIni); ?>"
 style="<?= $previewZoom; ?>">
 </div>
 
-<div class="photo-actions">
-
 <label class="upload-btn">
-
 <i class="fa-solid fa-camera"></i>
-
 Pilih Foto
-
 <input
 type="file"
 id="foto"
 name="foto"
 accept="image/*"
 hidden>
-
 </label>
 
 <?php if (!empty($user['foto']) && $user['foto'] !== 'default.png') { ?>
@@ -249,13 +276,10 @@ hidden>
 <button
 type="submit"
 name="hapus_foto"
-class="upload-btn hapus-foto-btn"
+class="link-hapus-foto"
 onclick="return confirm('Hapus foto profil dan kembalikan ke default?')">
-
 <i class="fa-solid fa-trash"></i>
-
 Hapus Foto
-
 </button>
 
 <?php } ?>
@@ -264,35 +288,62 @@ Hapus Foto
 
 <input type="hidden" name="avatar_pilihan" id="avatarPilihan" value="">
 
-<div class="avatar-gallery">
+<hr class="avatar-divider">
 
-<p class="avatar-gallery-label"><i class="fa-solid fa-wand-magic-sparkles"></i> Atau pilih avatar gratis</p>
+<div class="avatar-gallery-v2">
 
-<div class="avatar-grid">
+<h3>Pilih Avatar Gratis</h3>
+<p>Klik avatar untuk memilih</p>
 
-<?php for ($i = 1; $i <= 9; $i++):
-    $avatarFile = sprintf('avatar-%02d.jpg', $i);
-    $isActive = ($user['foto'] === "avatars/$avatarFile");
-    $zoom = $avatarZoom[$i] ?? 1;
+<div class="avatar-tabs">
+<button type="button" class="avatar-tab<?= $tabAktif === 'kucing' ? ' active' : ''; ?>" data-tab="kucing" onclick="pilihTab('kucing', this)">
+<i class="fa-solid fa-cat"></i> Kucing
+</button>
+<button type="button" class="avatar-tab<?= $tabAktif === 'kartun' ? ' active' : ''; ?>" data-tab="kartun" onclick="pilihTab('kartun', this)">
+<i class="fa-solid fa-face-smile"></i> Kartun
+</button>
+<button type="button" class="avatar-tab<?= $tabAktif === 'lainnya' ? ' active' : ''; ?>" data-tab="lainnya" onclick="pilihTab('lainnya', this)">
+<i class="fa-solid fa-shapes"></i> Lainnya
+</button>
+<button type="button" class="avatar-tab" data-tab="campuran" onclick="pilihTab('campuran', this)">
+<i class="fa-solid fa-star"></i> Campuran
+</button>
+</div>
+
+<div class="avatar-grid-v2" id="avatarGrid">
+
+<?php foreach ($daftarAvatar as $i => $a):
+    $isActive = ($user['foto'] === "avatars/{$a['file']}");
+    $tampil = ($a['kategori'] === $tabAktif);
 ?>
 
 <button
 type="button"
-class="avatar-option<?= $isActive ? ' selected' : ''; ?>"
-data-avatar="<?= $avatarFile; ?>"
-onclick="pilihAvatar('<?= $avatarFile; ?>', this)">
-<img src="assets/img/avatars/<?= $avatarFile; ?>" alt="Avatar <?= $i; ?>" style="transform:scale(<?= $zoom; ?>);">
+class="avatar-option-v2<?= $isActive ? ' selected' : ''; ?>"
+data-avatar="<?= $a['file']; ?>"
+data-kategori="<?= $a['kategori']; ?>"
+style="<?= $tampil ? '' : 'display:none;'; ?>"
+onclick="pilihAvatar('<?= $a['file']; ?>', <?= $a['zoom']; ?>, this)">
+<img src="assets/img/avatars/<?= $a['file']; ?>" alt="Avatar <?= $i + 1; ?>" style="transform:scale(<?= $a['zoom']; ?>);">
+<span class="avatar-check"><i class="fa-solid fa-check"></i></span>
 </button>
 
-<?php endfor; ?>
+<?php endforeach; ?>
 
+</div>
+
+<div class="avatar-info-note">
+<i class="fa-solid fa-circle-info"></i>
+<span>Avatar yang kamu pilih akan ditampilkan di profil dan leaderboard.</span>
 </div>
 
 </div>
 
 </div>
 
-<hr>
+<!-- AKUN -->
+
+<div class="account-card">
 
 <label>
 <i class="fa-solid fa-user"></i>
@@ -326,9 +377,21 @@ type="password"
 name="password"
 placeholder="Kosongkan jika tidak ingin mengganti password">
 
-<br>
+</div>
 
 <div class="btn-group">
+
+<a href="profil.php">
+
+<button
+type="button"
+class="secondary">
+
+Batal
+
+</button>
+
+</a>
 
 <button
 type="submit"
@@ -339,20 +402,6 @@ name="simpan">
 Simpan Perubahan
 
 </button>
-
-<a href="profil.php">
-
-<button
-type="button"
-class="secondary">
-
-<i class="fa-solid fa-arrow-left"></i>
-
-Kembali
-
-</button>
-
-</a>
 
 </div>
 
@@ -380,7 +429,7 @@ foto.addEventListener("change", function(){
         preview.style.transform = "";
         avatarPilihan.value = "";
 
-        document.querySelectorAll(".avatar-option").forEach(function(el){
+        document.querySelectorAll(".avatar-option-v2").forEach(function(el){
             el.classList.remove("selected");
         });
 
@@ -388,18 +437,32 @@ foto.addEventListener("change", function(){
 
 });
 
-function pilihAvatar(file, btn){
+function pilihAvatar(file, zoom, btn){
 
     preview.src = "assets/img/avatars/" + file;
-    preview.style.transform = btn.querySelector("img").style.transform;
+    preview.style.transform = "scale(" + zoom + ")";
     avatarPilihan.value = file;
     foto.value = "";
 
-    document.querySelectorAll(".avatar-option").forEach(function(el){
+    document.querySelectorAll(".avatar-option-v2").forEach(function(el){
         el.classList.remove("selected");
     });
 
     btn.classList.add("selected");
+
+}
+
+function pilihTab(kategori, tabBtn){
+
+    document.querySelectorAll(".avatar-tab").forEach(function(t){
+        t.classList.remove("active");
+    });
+    tabBtn.classList.add("active");
+
+    document.querySelectorAll(".avatar-option-v2").forEach(function(opt){
+        const tampil = (kategori === "campuran") || (opt.dataset.kategori === kategori);
+        opt.style.display = tampil ? "" : "none";
+    });
 
 }
 
