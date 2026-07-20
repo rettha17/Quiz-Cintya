@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Deploy project ini ke Hostinger lewat SSH.
-# Pemakaian: bash deploy.sh
+# Deploy project ini ke Hostinger lewat SSH + git pull.
+# Alur: push perubahan ke GitHub dulu (git push), baru jalankan: bash deploy.sh
 set -euo pipefail
 
 cd "$(dirname "$0")"
@@ -21,30 +21,13 @@ source deploy.env
 : "${SSH_KEY:=~/.ssh/hostinger_quizbps}"
 
 SSH_KEY="${SSH_KEY/#\~/$HOME}"
-SSH_OPTS=(-i "$SSH_KEY" -p "$SSH_PORT" -o StrictHostKeyChecking=accept-new)
+SSH_OPTS=(-i "$SSH_KEY" -p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=accept-new)
 
-ARCHIVE="deploy_$(date +%Y%m%d%H%M%S).tar.gz"
-REMOTE_TMP="~/${ARCHIVE}"
+echo "==> Menyinkronkan branch main lokal ke GitHub..."
+git push origin main
 
-echo "==> Membuat arsip project (mengecualikan file yang tidak perlu di-deploy)..."
-tar czf "$ARCHIVE" \
-  --exclude=".git" \
-  --exclude=".claude" \
-  --exclude="deploy.env" \
-  --exclude="deploy.env.example" \
-  --exclude="deploy.sh" \
-  --exclude="koneksi.php" \
-  --exclude="*.sql" \
-  --exclude="node_modules" \
-  .
-
-echo "==> Mengirim arsip ke server (${SSH_HOST}:${REMOTE_PATH})..."
-scp "${SSH_OPTS[@]}" "$ARCHIVE" "${SSH_USER}@${SSH_HOST}:${REMOTE_TMP}"
-
-echo "==> Mengekstrak arsip di server..."
-ssh "${SSH_OPTS[@]}" "${SSH_USER}@${SSH_HOST}" "mkdir -p '${REMOTE_PATH}' && tar xzf '${REMOTE_TMP}' -C '${REMOTE_PATH}' && rm -f '${REMOTE_TMP}'"
-
-rm -f "$ARCHIVE"
+echo "==> Menarik perubahan terbaru di server (${SSH_HOST}:${REMOTE_PATH})..."
+ssh "${SSH_OPTS[@]}" "${SSH_USER}@${SSH_HOST}" "cd '${REMOTE_PATH}' && git fetch origin main && git reset --hard origin/main"
 
 echo "==> Selesai. Perubahan sudah live di server."
-echo "    Catatan: koneksi.php TIDAK ikut di-deploy supaya kredensial database produksi di server tidak tertimpa."
+echo "    Catatan: koneksi.php di server dikunci (skip-worktree) jadi tidak ikut tertimpa oleh git reset."

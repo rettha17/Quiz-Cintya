@@ -23,7 +23,8 @@ position:relative;
 z-index:1;
 display:flex;
 align-items:stretch;
-height:720px;
+flex:1;
+min-height:560px;
 flex-wrap:wrap;
 padding:0;
 gap:0;
@@ -35,7 +36,7 @@ gap:0;
 
 .admin-auth-hero{
 position:relative;
-flex:1 1 56%;
+flex:1.8;
 min-width:320px;
 min-height:0;
 overflow:hidden;
@@ -56,7 +57,8 @@ display:block;
 =========================== */
 
 .admin-auth-panel{
-flex:1 1 380px;
+flex:0.9;
+min-width:380px;
 max-width:460px;
 min-height:0;
 display:flex;
@@ -295,37 +297,62 @@ width:100%;
    RESPONSIVE
 =========================== */
 
-@media(max-width:900px){
-.hero-features{
-grid-template-columns:1fr;
+@media(max-width:1440px){
+.admin-auth-hero{
+flex:1.55;
 }
-.admin-auth-page::before{
-width:340px;
-height:340px;
-top:-90px;
-right:-110px;
-opacity:.5;
+.admin-auth-panel{
+flex:1;
+max-width:420px;
+}
+}
+
+@media(max-width:1366px){
+.admin-auth-panel{
+padding:10px 10px 0 0;
+}
+.admin-login-card{
+padding:28px 30px;
+}
+.admin-card-icon img{
+width:56px;
+height:56px;
+}
+.admin-login-card h2{
+font-size:20px;
+}
+.admin-card-subtitle{
+font-size:13px;
+margin-bottom:14px;
+}
+}
+
+@media(max-width:992px){
+.admin-auth-main{
+flex-direction:column;
+min-height:0;
+}
+.admin-auth-hero{
+display:none;
+}
+.admin-auth-panel{
+max-width:100%;
+padding:28px 20px;
+}
+.admin-login-card{
+max-width:460px;
+margin:0 auto;
 }
 }
 
 @media(max-width:640px){
-.admin-auth-main{
-padding:28px 20px;
+.admin-auth-panel{
+padding:20px 16px;
 }
 .admin-feature-strip{
 padding:0 20px 28px;
 }
-.hero-heading h2{
-font-size:26px;
-}
 .admin-login-card{
 padding:32px 24px;
-}
-.admin-auth-page::before{
-width:220px;
-height:220px;
-top:-70px;
-right:-70px;
-opacity:.35;
 }
 }

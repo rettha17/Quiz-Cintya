@@ -955,6 +955,73 @@ font-size:12px;
    RESPONSIVE
 =========================== */
 
+@media (max-width:1440px){
+
+    .login-panel{
+        padding:32px 40px 28px 0;
+    }
+
+    .login-card{
+        max-width:400px;
+    }
+
+}
+
+@media (max-width:1366px){
+
+    .login-panel{
+        padding:28px 35px 24px 0;
+    }
+
+    .login-card{
+        padding:24px 26px 20px;
+        max-width:380px;
+    }
+
+    .login-card-icon-wrap,
+    .login-card-icon-ring{
+        width:52px;
+        height:52px;
+    }
+
+    .login-card-icon{
+        width:44px;
+        height:44px;
+        font-size:19px;
+    }
+
+    .login-card h2{
+        font-size:18px;
+    }
+
+    .login-card > p{
+        font-size:12px;
+    }
+
+}
+
+@media (max-width:992px){
+
+    .login-main{
+        flex-direction:column;
+    }
+
+    .login-hero{
+        display:none;
+    }
+
+    .login-panel{
+        max-width:100%;
+        align-items:center;
+        padding:36px 20px 28px;
+    }
+
+    .login-card{
+        max-width:460px;
+    }
+
+}
+
 @media (max-width:640px){
 
     .login-panel{
