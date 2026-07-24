@@ -2,52 +2,6 @@
 require __DIR__ . "/auth.php";
 require __DIR__ . "/../inc/functions.php";
 
-/**
- * Sparkline SVG mini-chart untuk kartu statistik.
- * $data: array of ['label' => ..., 'total' => int]
- */
-function renderSparkline($data, $color, $width = 160, $height = 52) {
-    static $spCounter = 0;
-    $n = count($data);
-    if ($n < 2) return '';
-
-    $values = array_column($data, 'total');
-    $max = max($values);
-    $min = min($values);
-    $range = max(1, $max - $min);
-    $padY = 8;
-    $stepX = $width / ($n - 1);
-    $pts = [];
-
-    foreach ($data as $i => $d) {
-        $x = round($i * $stepX, 2);
-        $y = round($padY + ($height - $padY * 2) * (1 - ($d['total'] - $min) / $range), 2);
-        $pts[] = [$x, $y];
-    }
-
-    $path = "M {$pts[0][0]},{$pts[0][1]} ";
-    for ($i = 1; $i < $n - 1; $i++) {
-        $mx = round(($pts[$i][0] + $pts[$i + 1][0]) / 2, 2);
-        $my = round(($pts[$i][1] + $pts[$i + 1][1]) / 2, 2);
-        $path .= "Q {$pts[$i][0]},{$pts[$i][1]} {$mx},{$my} ";
-    }
-    $secondLast = $pts[$n - 2];
-    $last = $pts[$n - 1];
-    $path .= "Q {$secondLast[0]},{$secondLast[1]} {$last[0]},{$last[1]}";
-
-    $areaPath = $path . " L {$width},{$height} L 0,{$height} Z";
-    $gid = 'sparkGrad' . (++$spCounter);
-
-    return '<svg viewBox="0 0 ' . $width . ' ' . $height . '" class="sparkline" preserveAspectRatio="none" aria-hidden="true">'
-        . '<defs><linearGradient id="' . $gid . '" x1="0" y1="0" x2="0" y2="1">'
-        . '<stop offset="0%" stop-color="' . $color . '" stop-opacity="0.35"/>'
-        . '<stop offset="100%" stop-color="' . $color . '" stop-opacity="0"/>'
-        . '</linearGradient></defs>'
-        . '<path d="' . e($areaPath) . '" fill="url(#' . $gid . ')" stroke="none"/>'
-        . '<path d="' . e($path) . '" fill="none" stroke="' . $color . '" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>'
-        . '</svg>';
-}
-
 $totalUsers = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) c FROM users"))['c'];
 $totalKategori = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) c FROM kategori"))['c'];
 $totalSoal = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) c FROM soal"))['c'];
@@ -284,7 +238,7 @@ $activeMenu = 'dashboard';
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Admin Dashboard | Quiz Challenge BPS</title>
+<title>Admin Dashboard | StatQuest BPS</title>
 
 <link rel="stylesheet" href="assets/admin.css?v=<?= filemtime(__DIR__ . "/assets/admin.css"); ?>">
 
@@ -314,7 +268,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
 <div class="admin-topbar-greeting">
 <h1>Selamat datang, <?= e($admin['nama']); ?>! <span class="wave">👋</span></h1>
-<p>Kelola konten, pengguna, dan pantau perkembangan Quiz Challenge BPS.</p>
+<p>Kelola konten, pengguna, dan pantau perkembangan StatQuest BPS.</p>
 </div>
 
 <div class="admin-topbar-right">
@@ -712,6 +666,8 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 <?php } ?>
 
 </div>
+
+<?php require __DIR__ . "/partials/footer.php"; ?>
 
 </main>
 

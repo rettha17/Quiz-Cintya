@@ -1,9 +1,12 @@
 <?php
 require __DIR__ . "/../inc/auth.php";
-require __DIR__ . "/../inc/functions.php";
+require_once __DIR__ . "/../inc/functions.php";
 
 if (isset($_GET['keluar'])) {
-    unset($_SESSION['soal'], $_SESSION['soal_kategori'], $_SESSION['soal_level'], $_SESSION['skor'], $_SESSION['xp'], $_SESSION['nyawa'], $_SESSION['posisi_terakhir']);
+    if (isset($_GET['kategori'], $_GET['level'])) {
+        $keluarKey = quizProgressKey((int) $_GET['kategori'], $_GET['level']);
+        unset($_SESSION['quiz_checkpoints'][$keluarKey]);
+    }
     header("Location: kategori.php");
     exit;
 }
@@ -11,9 +14,7 @@ if (isset($_GET['keluar'])) {
 $progress = getProgress($conn, $user_id);
 $soalStats = getSoalStats($conn);
 
-$resumeKategori = $_SESSION['soal_kategori'] ?? null;
-$resumeLevel = $_SESSION['soal_level'] ?? null;
-$resumeNomor = quizResumeNomor($resumeKategori, $resumeLevel);
+$resumeList = quizActiveCheckpoints();
 
 $activeMenu = 'quiz';
 
@@ -33,7 +34,7 @@ $qcLevelEmoji = ['Mudah' => '😊', 'Sedang' => '😐', 'Sulit' => '😟'];
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Quiz Challenge | Quiz Challenge BPS</title>
+<title>StatQuest BPS</title>
 
 <link rel="stylesheet" href="assets/css/style.css?v=<?= filemtime(__DIR__ . '/assets/css/style.css'); ?>">
 
@@ -63,7 +64,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
 <div class="section-title">
 
-<h2><i class="fa-solid fa-trophy" style="color:#FFC107;"></i> Quiz Challenge</h2>
+<h2><i class="fa-solid fa-trophy" style="color:#FFC107;"></i> StatQuest BPS</h2>
 
 </div>
 
@@ -184,6 +185,8 @@ Pilih kategori, lalu pilih tingkat kesulitan (Mudah, Sedang, Sulit) untuk mulai 
 <a href="leaderboard.php" class="qc-cta-btn"><i class="fa-solid fa-chart-simple"></i> Lihat Leaderboard <i class="fa-solid fa-chevron-right"></i></a>
 </div>
 
+<?php require __DIR__ . "/../inc/footer.php"; ?>
+
 </main>
 
 </div>
@@ -215,9 +218,7 @@ Pilih kategori, lalu pilih tingkat kesulitan (Mudah, Sedang, Sulit) untuk mulai 
 
 <script>
 
-const RESUME_KATEGORI = <?= json_encode($resumeKategori) ?>;
-const RESUME_LEVEL = <?= json_encode($resumeLevel) ?>;
-const RESUME_NOMOR = <?= json_encode($resumeNomor) ?>;
+const RESUME_LIST = <?= json_encode($resumeList) ?>;
 
 const LEVEL_TOMBOL = {
     mudah: { label: "Mudah", teks: "😊 Mudah" },
@@ -234,9 +235,13 @@ function bukaLevel(id){
         const link = document.getElementById(key);
         let href = "quiz.php?kategori="+id+"&level="+label;
 
-        if (RESUME_NOMOR !== null && String(RESUME_KATEGORI) === String(id) && RESUME_LEVEL === label) {
-            href += "&no="+RESUME_NOMOR;
-            link.querySelector("button").textContent = "▶ Lanjutkan (Soal " + (RESUME_NOMOR + 1) + ")";
+        const resume = RESUME_LIST.find(function(r){
+            return String(r.kategori) === String(id) && r.level === label;
+        });
+
+        if (resume) {
+            href += "&no="+resume.nomor;
+            link.querySelector("button").textContent = "▶ Lanjutkan (Soal " + (resume.nomor + 1) + ")";
         } else {
             link.querySelector("button").textContent = teks;
         }

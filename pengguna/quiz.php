@@ -1,6 +1,6 @@
 <?php
 require __DIR__ . "/../inc/auth.php";
-require __DIR__ . "/../inc/functions.php";
+require_once __DIR__ . "/../inc/functions.php";
 
 if (!isset($_GET['kategori'])) {
     header("Location: kategori.php");
@@ -10,39 +10,46 @@ if (!isset($_GET['kategori'])) {
 $kategori = (int) $_GET['kategori'];
 $level = levelValid($_GET['level'] ?? 'Mudah');
 $nomor = isset($_GET['no']) ? (int) $_GET['no'] : 0;
+$progressKey = quizProgressKey($kategori, $level);
 
 /* ===========================
    Ambil soal (baru diacak ulang & skor direset
    setiap kali quiz dimulai dari soal pertama)
+   - checkpoint disimpan per kategori+level, jadi berpindah
+     kategori/level lain tidak menghapus progress yang ini.
 =========================== */
 
-if ($nomor === 0
-    || !isset($_SESSION['soal'])
-    || $_SESSION['soal_kategori'] != $kategori
-    || $_SESSION['soal_level'] != $level) {
+if ($nomor === 0 || empty($_SESSION['quiz_checkpoints'][$progressKey]['soal'])) {
 
     $stmt = mysqli_prepare($conn, "SELECT id FROM soal WHERE kategori_id=? AND level=? ORDER BY RAND()");
     mysqli_stmt_bind_param($stmt, "is", $kategori, $level);
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
 
-    $_SESSION['soal'] = [];
+    $daftarSoal = [];
     while ($d = mysqli_fetch_assoc($res)) {
-        $_SESSION['soal'][] = $d['id'];
+        $daftarSoal[] = $d['id'];
     }
 
-    $_SESSION['soal_kategori'] = $kategori;
-    $_SESSION['soal_level'] = $level;
-    $_SESSION['skor'] = 0;
-    $_SESSION['xp'] = 0;
-    $_SESSION['nyawa'] = 5;
+    $_SESSION['quiz_checkpoints'][$progressKey] = [
+        'soal' => $daftarSoal,
+        'skor' => 0,
+        'xp' => 0,
+        'nyawa' => 5,
+        'jumlah_benar' => 0,
+        'jumlah_salah' => 0,
+        'waktu_mulai' => time(),
+        'posisi_terakhir' => 0,
+    ];
 }
 
-$skorSaatIni = $_SESSION['skor'] ?? 0;
-$nyawa = $_SESSION['nyawa'] ?? 5;
+$checkpoint = &$_SESSION['quiz_checkpoints'][$progressKey];
+
+$skorSaatIni = $checkpoint['skor'] ?? 0;
+$nyawa = $checkpoint['nyawa'] ?? 5;
 $durasiWaktu = levelDurasiWaktu($level);
 
-if (empty($_SESSION['soal'])) {
+if (empty($checkpoint['soal'])) {
     die("
     <div style='text-align:center;margin-top:100px;font-family:sans-serif;'>
     <h2>Belum ada soal untuk level ini.</h2>
@@ -51,14 +58,14 @@ if (empty($_SESSION['soal'])) {
     ");
 }
 
-$jumlah = count($_SESSION['soal']);
+$jumlah = count($checkpoint['soal']);
 
 if ($nomor >= $jumlah) {
     header("Location: hasil.php?kategori=$kategori&level=$level");
     exit;
 }
 
-$id_soal = $_SESSION['soal'][$nomor];
+$id_soal = $checkpoint['soal'][$nomor];
 
 $stmt = mysqli_prepare($conn, "SELECT * FROM soal WHERE id=?");
 mysqli_stmt_bind_param($stmt, "i", $id_soal);
@@ -134,7 +141,7 @@ function temaIkonOpsi($opt, $temaBajakLaut, $temaKebun, $temaLebah, $temaPanda, 
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0">
 
-<title>Quiz Challenge</title>
+<title>StatQuest BPS</title>
 
 <script>
 document.documentElement.setAttribute("data-theme", localStorage.getItem("quizbps-theme") || "light");
@@ -152,7 +159,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
 <div class="quiz-container">
 
-<a href="kategori.php?keluar=1" class="quiz-back" onclick="return confirm('Keluar dari quiz? Progress soal saat ini akan hilang.')">
+<a href="kategori.php?keluar=1&kategori=<?= $kategori; ?>&level=<?= e($level); ?>" class="quiz-back" onclick="return confirm('Keluar dari quiz? Progress soal saat ini akan hilang.')">
 
 <i class="fa-solid fa-arrow-left"></i> Kembali
 
@@ -198,7 +205,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
 <h2 class="misi-judul">
 
-<?= e($kategoriInfo['nama'] ?? 'Quiz Challenge'); ?> - <?= e($level); ?>
+<?= e($kategoriInfo['nama'] ?? 'StatQuest BPS'); ?> - <?= e($level); ?>
 
 </h2>
 

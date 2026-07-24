@@ -7,6 +7,16 @@
 
 session_start();
 require_once __DIR__ . "/../koneksi.php";
+require_once __DIR__ . "/functions.php";
+
+if (getSetting($conn, 'maintenance_mode', '0') === '1') {
+    die("
+    <h2 align='center' style='margin-top:100px;font-family:sans-serif;'>
+    <i class='fa-solid fa-screwdriver-wrench'></i> StatQuest BPS sedang dalam pemeliharaan.
+    <br>Silakan coba lagi beberapa saat lagi.
+    </h2>
+    ");
+}
 
 if (!isset($_SESSION['id'])) {
     header("Location: login.php");

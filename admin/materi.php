@@ -124,7 +124,7 @@ $activeMenu = 'materi';
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Materi Pembelajaran | Admin Quiz Challenge BPS</title>
+<title>Materi Pembelajaran | Admin StatQuest BPS</title>
 
 <link rel="stylesheet" href="assets/admin.css?v=<?= filemtime(__DIR__ . "/assets/admin.css"); ?>">
 
@@ -273,6 +273,8 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 </table>
 
 </div>
+
+<?php require __DIR__ . "/partials/footer.php"; ?>
 
 </main>
 

@@ -171,7 +171,7 @@ foreach (['A', 'B', 'C', 'D'] as $opt) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Preview Game | Admin Quiz Challenge BPS</title>
+<title>Preview Game | Admin StatQuest BPS</title>
 
 <link rel="stylesheet" href="../pengguna/assets/css/quiz.css?v=<?= filemtime(__DIR__ . "/../pengguna/assets/css/quiz.css"); ?>">
 
@@ -332,7 +332,7 @@ body{
 </div>
 
 <h2 class="misi-judul">
-<?= e($kategoriInfo['nama'] ?? 'Quiz Challenge'); ?> - <?= e($filterLevel); ?>
+<?= e($kategoriInfo['nama'] ?? 'StatQuest BPS'); ?> - <?= e($filterLevel); ?>
 </h2>
 
 <div class="question-card">

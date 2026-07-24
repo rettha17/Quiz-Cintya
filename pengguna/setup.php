@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS users (
     foto VARCHAR(255) DEFAULT 'default.png',
     level INT DEFAULT 1,
     xp INT DEFAULT 0,
+    status ENUM('aktif','nonaktif') NOT NULL DEFAULT 'aktif',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )");
 
@@ -68,18 +69,63 @@ CREATE TABLE IF NOT EXISTS hasil_quiz (
     level ENUM('Mudah','Sedang','Sulit') DEFAULT 'Mudah',
     score INT,
     xp INT,
+    jumlah_benar INT NULL DEFAULT NULL,
+    jumlah_salah INT NULL DEFAULT NULL,
+    durasi_detik INT NULL DEFAULT NULL,
     tanggal TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     KEY idx_user (user_id),
     KEY idx_kategori (kategori_id)
 )");
 
 mysqli_query($conn, "
+CREATE TABLE IF NOT EXISTS sertifikat (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    certificate_number VARCHAR(40) NOT NULL,
+    verification_token VARCHAR(32) NOT NULL,
+    score INT NOT NULL DEFAULT 0,
+    mastery INT NOT NULL DEFAULT 0,
+    status ENUM('valid','dicabut') NOT NULL DEFAULT 'valid',
+    issue_date DATE NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uniq_certificate_number (certificate_number),
+    UNIQUE KEY uniq_verification_token (verification_token),
+    UNIQUE KEY uniq_user_id (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+mysqli_query($conn, "
+CREATE TABLE IF NOT EXISTS password_reset_otp (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    email VARCHAR(150) NOT NULL,
+    otp VARCHAR(6) NOT NULL,
+    expired_at DATETIME NOT NULL,
+    is_used TINYINT(1) NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_user (user_id),
+    KEY idx_otp (otp)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+mysqli_query($conn, "
 CREATE TABLE IF NOT EXISTS admin (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nama VARCHAR(100) NOT NULL,
     username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(150) NULL,
+    no_telp VARCHAR(30) NULL,
+    foto VARCHAR(255) NULL,
+    two_fa_enabled TINYINT(1) NOT NULL DEFAULT 0,
     password VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)");
+
+mysqli_query($conn, "
+CREATE TABLE IF NOT EXISTS pengaturan (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    setting_key VARCHAR(100) NOT NULL UNIQUE,
+    setting_value TEXT,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 )");
 
 mysqli_query($conn, "

@@ -409,6 +409,8 @@ Simpan Perubahan
 
 </div>
 
+<?php require __DIR__ . "/../inc/footer.php"; ?>
+
 </main>
 
 </div>

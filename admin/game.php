@@ -256,7 +256,7 @@ margin-bottom:15px;
 
 <h1>🎮 Game Editor</h1>
 
-<p>Atur alur Quiz Challenge BPS.</p>
+<p>Atur alur StatQuest BPS.</p>
 
 </div>
 
@@ -390,7 +390,7 @@ FINISH
 
 <p>
 
-1. User memilih kategori di halaman Quiz Challenge.
+1. User memilih kategori di halaman StatQuest BPS.
 
 </p>
 
@@ -425,6 +425,8 @@ FINISH
 </p>
 
 </div>
+
+<?php require __DIR__ . "/partials/footer.php"; ?>
 
 </div>
 

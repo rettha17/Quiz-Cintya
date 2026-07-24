@@ -1,6 +1,6 @@
 <?php
 require __DIR__ . "/../inc/auth.php";
-require __DIR__ . "/../inc/functions.php";
+require_once __DIR__ . "/../inc/functions.php";
 
 $daftarKategori = mysqli_query($conn, "SELECT * FROM kategori ORDER BY id");
 $materiProgress = getMateriDenganProgress($conn, $user_id);
@@ -35,6 +35,7 @@ $topikIconMap = [
     1 => ['fa-book', 'blue'],
     2 => ['sigma', 'green'],
     3 => ['fa-chart-column', 'purple'],
+    4 => ['fa-building-columns', 'blue'],
     5 => ['fa-clipboard-list', 'teal'],
     6 => ['fa-users', 'blue'],
     7 => ['fa-seedling', 'green'],
@@ -45,6 +46,34 @@ $topikIconMap = [
     12 => ['fa-briefcase', 'orange'],
     13 => ['fa-hand-holding-heart', 'red'],
     14 => ['fa-arrow-trend-up', 'purple'],
+    16 => ['fa-ruler-combined', 'teal'],
+    17 => ['fa-square-root-variable', 'purple'],
+    18 => ['fa-people-group', 'blue'],
+    19 => ['fa-sliders', 'green'],
+    20 => ['fa-percent', 'orange'],
+    21 => ['fa-calculator', 'red'],
+    22 => ['fa-scale-balanced', 'teal'],
+    23 => ['fa-dice', 'blue'],
+    24 => ['fa-brain', 'purple'],
+    25 => ['fa-clipboard-check', 'green'],
+    26 => ['fa-tablet-screen-button', 'purple'],
+    27 => ['fa-map-location-dot', 'orange'],
+    28 => ['fa-user-shield', 'red'],
+    29 => ['fa-sitemap', 'teal'],
+    30 => ['fa-layer-group', 'blue'],
+    31 => ['fa-database', 'green'],
+    32 => ['fa-magnifying-glass-chart', 'purple'],
+    33 => ['fa-globe', 'orange'],
+    34 => ['fa-wheat-awn', 'green'],
+    35 => ['fa-user-tie', 'blue'],
+    36 => ['fa-people-roof', 'purple'],
+    37 => ['fa-venus-mars', 'red'],
+    38 => ['fa-heart-pulse', 'orange'],
+    39 => ['fa-chart-pie', 'teal'],
+    40 => ['fa-magnifying-glass-dollar', 'blue'],
+    41 => ['fa-ship', 'green'],
+    42 => ['fa-plane', 'purple'],
+    43 => ['fa-hand-holding-dollar', 'orange'],
 ];
 
 $activeMenu = 'materi';
@@ -57,7 +86,7 @@ $activeMenu = 'materi';
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Materi Pembelajaran | Quiz Challenge BPS</title>
+<title>Materi Pembelajaran | StatQuest BPS</title>
 
 <link rel="stylesheet" href="assets/css/style.css?v=<?= filemtime(__DIR__ . '/assets/css/style.css'); ?>">
 
@@ -360,6 +389,8 @@ Pelajari konsep dasar statistika yang penting untuk memahami data dan pengambila
 <?php endwhile; ?>
 
 </div>
+
+<?php require __DIR__ . "/../inc/footer.php"; ?>
 
 </main>
 

@@ -240,7 +240,7 @@ $activeMenu = 'progress';
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Progress Belajar | Quiz Challenge BPS</title>
+<title>Progress Belajar | StatQuest BPS</title>
 
 <link rel="stylesheet" href="assets/css/style.css?v=<?= filemtime(__DIR__ . '/assets/css/style.css'); ?>">
 
@@ -573,7 +573,7 @@ Perlu Diulang
 
 <!-- ================= RIWAYAT AKTIVITAS ================= -->
 
-<div class="dash-panel">
+<div class="dash-panel riwayat-aktivitas-panel">
 
 <div class="chart-panel-head">
 <h2><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Aktivitas</h2>
@@ -596,6 +596,8 @@ Perlu Diulang
 <?php endif; ?>
 
 </div>
+
+<?php require __DIR__ . "/../inc/footer.php"; ?>
 
 </main>
 

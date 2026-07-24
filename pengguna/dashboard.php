@@ -1,6 +1,6 @@
 <?php
 require __DIR__ . "/../inc/auth.php";
-require __DIR__ . "/../inc/functions.php";
+require_once __DIR__ . "/../inc/functions.php";
 
 /**
  * Sparkline SVG mini-chart untuk kartu statistik (kurva halus + gradasi area).
@@ -150,6 +150,7 @@ foreach ($progress as $kategoriId => $kat) {
         'id' => $kategoriId,
         'nama' => $kat['nama'],
         'icon' => $kat['icon'],
+        'deskripsi' => $kat['deskripsi'],
         'warna' => $kategoriWarnaUser[$idx % 3],
         'total' => $totalMateriKat,
         'selesai' => $selesaiKat,
@@ -295,7 +296,7 @@ $activeMenu = 'dashboard';
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Dashboard | Quiz Challenge BPS</title>
+<title>Dashboard | StatQuest BPS</title>
 
 <link rel="stylesheet" href="assets/css/style.css?v=<?= filemtime(__DIR__ . '/assets/css/style.css'); ?>">
 
@@ -403,7 +404,7 @@ autocomplete="off">
 
 Selamat datang di
 
-<b>Quiz Challenge : Jelajah Statistik Indonesia</b>
+<b>StatQuest BPS : Jelajah Statistik Indonesia</b>
 
 </p>
 
@@ -415,7 +416,7 @@ Selamat datang di
 </div>
 
 <div class="dash-hero-mascot">
-<img src="assets/img/hero-girl-mascot.jpg" alt="Ilustrasi belajar statistik Quiz Challenge BPS">
+<img src="assets/img/hero-girl-mascot.jpg" alt="Ilustrasi belajar statistik StatQuest BPS">
 </div>
 
 </div>
@@ -579,6 +580,9 @@ for ($s = 0; $s < 5; $s++) {
 <span class="dash-materi-stars-text"><?= $kat['selesai']; ?>/<?= $kat['total']; ?> topik</span>
 </div>
 <a href="materi.php#materi-<?= $kat['id']; ?>" class="btn-lanjut-belajar" style="background:<?= $kat['warna']; ?>">Lanjut Belajar</a>
+<?php if (!empty($kat['deskripsi'])) { ?>
+<div class="dash-materi-desc" style="background:<?= $kat['warna']; ?>14"><?= e($kat['deskripsi']); ?></div>
+<?php } ?>
 </div>
 <?php } ?>
 
@@ -688,6 +692,8 @@ for ($s = 0; $s < 5; $s++) {
 </table>
 
 </section>
+
+<?php require __DIR__ . "/../inc/footer.php"; ?>
 
 </main>
 

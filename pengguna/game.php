@@ -32,7 +32,7 @@ while($row=mysqli_fetch_assoc($q)){
 
 <meta charset="UTF-8">
 
-<title>Quiz Challenge</title>
+<title>StatQuest BPS</title>
 
 <link rel="stylesheet" href="assets/css/game.css">
 

@@ -99,40 +99,53 @@ function temaIkonHasil($opt, $stateClass, $temaBajakLaut, $temaKebun, $temaLebah
     return $stateClass === 'window-correct' ? '💨' : '🔥';
 }
 
+$progressKey = quizProgressKey($kategori, $level);
+$checkpoint = &$_SESSION['quiz_checkpoints'][$progressKey];
+
 $benar = ($jawaban === $soal['jawaban']);
 
-$total = !empty($_SESSION['soal']) ? count($_SESSION['soal']) : 1;
+$total = !empty($checkpoint['soal']) ? count($checkpoint['soal']) : 1;
 $poin = (int) round(100 / $total);
 
-if (!isset($_SESSION['skor'])) {
-    $_SESSION['skor'] = 0;
+if (!isset($checkpoint['skor'])) {
+    $checkpoint['skor'] = 0;
 }
 
-if (!isset($_SESSION['xp'])) {
-    $_SESSION['xp'] = 0;
+if (!isset($checkpoint['xp'])) {
+    $checkpoint['xp'] = 0;
 }
 
-if (!isset($_SESSION['nyawa'])) {
-    $_SESSION['nyawa'] = 5;
+if (!isset($checkpoint['nyawa'])) {
+    $checkpoint['nyawa'] = 5;
+}
+
+if (!isset($checkpoint['jumlah_benar'])) {
+    $checkpoint['jumlah_benar'] = 0;
+}
+
+if (!isset($checkpoint['jumlah_salah'])) {
+    $checkpoint['jumlah_salah'] = 0;
 }
 
 if ($benar) {
-    $_SESSION['skor'] += $poin;
-    $_SESSION['xp'] += 10;
+    $checkpoint['skor'] += $poin;
+    $checkpoint['xp'] += 10;
+    $checkpoint['jumlah_benar']++;
 } else {
-    $_SESSION['nyawa'] = max(0, $_SESSION['nyawa'] - 1);
+    $checkpoint['nyawa'] = max(0, $checkpoint['nyawa'] - 1);
+    $checkpoint['jumlah_salah']++;
 }
 
-$nyawaSisa = $_SESSION['nyawa'];
+$nyawaSisa = $checkpoint['nyawa'];
 $gameOver = ($nyawaSisa <= 0);
-$skorSaatIni = $_SESSION['skor'];
+$skorSaatIni = $checkpoint['skor'];
 
 $next = $nomor + 1;
 
 if ($gameOver || $next >= $total) {
-    unset($_SESSION['posisi_terakhir']);
+    unset($checkpoint['posisi_terakhir']);
 } else {
-    $_SESSION['posisi_terakhir'] = $next;
+    $checkpoint['posisi_terakhir'] = $next;
 }
 
 /* ===========================

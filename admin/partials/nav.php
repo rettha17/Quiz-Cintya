@@ -1,10 +1,14 @@
 <?php
 /**
  * Shared admin sidebar. Expects $admin (array) and $activeMenu (string) to be set
- * by the including page. $activeMenu is one of: dashboard, kategori, soal, materi, game, users, ranking, progress_materi.
+ * by the including page. $activeMenu is one of: dashboard, kategori, soal, materi, game, users, ranking, progress_materi, sertifikat, pengaturan.
  */
 $activeMenu = $activeMenu ?? '';
+require_once __DIR__ . "/../../inc/functions.php";
+$navWarnaUtama = getSetting($conn, 'tampilan_warna_utama', '#1565C0');
+$navWarnaSekunder = getSetting($conn, 'tampilan_warna_sekunder', '#F9A825');
 ?>
+<style>:root{--brand-primary:<?= e($navWarnaUtama); ?>;--brand-secondary:<?= e($navWarnaSekunder); ?>;}</style>
 <button type="button" class="admin-sidebar-toggle" id="adminSidebarToggle" aria-label="Buka menu">
 <i class="fa-solid fa-bars"></i>
 </button>
@@ -16,21 +20,12 @@ $activeMenu = $activeMenu ?? '';
 <div class="admin-logo">
 
 <div class="admin-logo-icon">
-<svg viewBox="0 0 40 40" class="admin-logo-chart" aria-hidden="true">
-<polyline points="5,22 13,16 20,19 32,7" fill="none" stroke="#FFA726" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-<polyline points="25,7 32,7 32,14" fill="none" stroke="#FFA726" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="5" y="23" width="5" height="8" rx="1.5" fill="#fff"/>
-<rect x="13" y="19" width="5" height="12" rx="1.5" fill="#fff"/>
-<rect x="21" y="15" width="5" height="16" rx="1.5" fill="#fff"/>
-<rect x="29" y="8" width="5" height="23" rx="1.5" fill="#fff"/>
-<rect x="5" y="33" width="29" height="2.5" rx="1.25" fill="#fff"/>
-</svg>
-<span class="admin-logo-badge"><i class="fa-solid fa-shield-halved"></i></span>
+<img src="assets/img/login-badge-icon.png?v=<?= filemtime(__DIR__ . "/../assets/img/login-badge-icon.png"); ?>" alt="" class="admin-logo-img">
 </div>
 
 <div>
 <h2><span class="admin-logo-admin">Admin</span> <span class="admin-logo-panel">Panel</span></h2>
-<p>Quiz Challenge BPS</p>
+<p>StatQuest BPS</p>
 </div>
 
 </div>
@@ -80,9 +75,9 @@ $activeMenu = $activeMenu ?? '';
 </li>
 
 <li class="<?= $activeMenu === 'ranking' ? 'active' : ''; ?>">
-    <a href="ranking.php" title="Ranking">
+    <a href="ranking.php" title="Leaderboard">
         <i class="fa-solid fa-trophy"></i>
-        <span>Ranking</span>
+        <span>Leaderboard</span>
     </a>
 </li>
 
@@ -90,6 +85,20 @@ $activeMenu = $activeMenu ?? '';
     <a href="progress_materi.php" title="Progress Materi">
         <i class="fa-solid fa-chart-line"></i>
         <span>Progress Materi</span>
+    </a>
+</li>
+
+<li class="<?= $activeMenu === 'sertifikat' ? 'active' : ''; ?>">
+    <a href="sertifikat.php" title="Sertifikat">
+        <i class="fa-solid fa-certificate"></i>
+        <span>Sertifikat</span>
+    </a>
+</li>
+
+<li class="<?= $activeMenu === 'pengaturan' ? 'active' : ''; ?>">
+    <a href="pengaturan.php" title="Pengaturan">
+        <i class="fa-solid fa-gear"></i>
+        <span>Pengaturan</span>
     </a>
 </li>
 
@@ -108,7 +117,10 @@ $activeMenu = $activeMenu ?? '';
 </a>
 
 <div class="admin-mascot-block">
-<img src="assets/img/sidebar-mascot-panel.png" alt="Quiz Challenge BPS - Jelajah Statistik Indonesia" class="mascot-panel-img">
+<img src="assets/img/login-badge-icon.png?v=<?= filemtime(__DIR__ . "/../assets/img/login-badge-icon.png"); ?>" alt="" class="admin-mascot-badge">
+<p class="admin-mascot-title">StatQuest <span>BPS</span></p>
+<p class="admin-mascot-tagline">Jelajah Statistik Indonesia</p>
+<img src="assets/img/mascot-boy.png?v=<?= filemtime(__DIR__ . "/../assets/img/mascot-boy.png"); ?>" alt="" class="mascot-panel-img">
 </div>
 
 </div>

@@ -1,13 +1,19 @@
 <?php
 require __DIR__ . "/../inc/auth.php";
-require __DIR__ . "/../inc/functions.php";
-
-$skor = $_SESSION['skor'] ?? 0;
-$xpDidapat = $_SESSION['xp'] ?? 0;
+require_once __DIR__ . "/../inc/functions.php";
 
 $kategori = isset($_GET['kategori']) ? (int) $_GET['kategori'] : 0;
 $level = levelValid($_GET['level'] ?? 'Mudah');
 $kehabisanNyawa = isset($_GET['habis']);
+
+$progressKey = quizProgressKey($kategori, $level);
+$checkpoint = $_SESSION['quiz_checkpoints'][$progressKey] ?? [];
+
+$skor = $checkpoint['skor'] ?? 0;
+$xpDidapat = $checkpoint['xp'] ?? 0;
+$jumlahBenar = $checkpoint['jumlah_benar'] ?? 0;
+$jumlahSalah = $checkpoint['jumlah_salah'] ?? 0;
+$durasiDetik = isset($checkpoint['waktu_mulai']) ? max(0, time() - (int) $checkpoint['waktu_mulai']) : 0;
 
 $kategoriInfo = null;
 if ($kategori > 0) {
@@ -19,19 +25,19 @@ if ($kategori > 0) {
 
 /* ===========================
    Simpan hasil quiz & tambah XP
-   (hanya sekali, saat baru selesai main - dijaga lewat $_SESSION['skor'])
+   (hanya sekali, saat baru selesai main - dijaga lewat checkpoint kategori+level ini)
 =========================== */
 
-if ($kategori > 0 && isset($_SESSION['skor'])) {
+if ($kategori > 0 && isset($checkpoint['skor'])) {
 
     $xpLama = (int) $user['xp'];
     $levelLama = (int) $user['level'];
 
     $stmt = mysqli_prepare($conn, "
-        INSERT INTO hasil_quiz (user_id, kategori_id, level, score, xp)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO hasil_quiz (user_id, kategori_id, level, score, xp, jumlah_benar, jumlah_salah, durasi_detik)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     ");
-    mysqli_stmt_bind_param($stmt, "iisii", $user_id, $kategori, $level, $skor, $xpDidapat);
+    mysqli_stmt_bind_param($stmt, "iisiiiii", $user_id, $kategori, $level, $skor, $xpDidapat, $jumlahBenar, $jumlahSalah, $durasiDetik);
     mysqli_stmt_execute($stmt);
 
     $up = mysqli_prepare($conn, "UPDATE users SET xp = xp + ? WHERE id = ?");
@@ -88,15 +94,11 @@ if ($skor == 100) {
 $rekomendasi = getRekomendasi($conn, $user_id, 70, 3);
 
 /* ===========================
-   Hapus Session Quiz
+   Hapus Checkpoint Quiz kategori+level ini saja
+   (checkpoint kategori/level lain yang sedang berjalan tidak ikut terhapus)
 =========================== */
 
-unset($_SESSION['skor']);
-unset($_SESSION['xp']);
-unset($_SESSION['nyawa']);
-unset($_SESSION['soal']);
-unset($_SESSION['soal_kategori']);
-unset($_SESSION['soal_level']);
+unset($_SESSION['quiz_checkpoints'][$progressKey]);
 
 ?>
 
